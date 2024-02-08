@@ -19,7 +19,7 @@ async def notify_new_positions():
     bot = Bot(os.getenv('TG_BOT_TOKEN'))
     chat_id = os.getenv('TG_CHANNEL_ID')
 
-    for position in Position.select().where(Position.telegram_message_id.is_null(True)):
+    for position in Position.select().where(Position.telegram_message_id.is_null(True)).limit(10):
         message = await bot.send_message(chat_id, single_position_markdown(position), ParseMode.MARKDOWN, disable_web_page_preview=True, write_timeout=5, read_timeout=5)
         position.telegram_message_id = message.message_id
         position.save()

@@ -1,0 +1,23 @@
+version: "3.4"
+
+services:
+  scheduler:
+    restart: on-failure
+    build: .
+    image: r4mtin/phd-finder:latest
+    volumes:
+      - "./:/app"
+    env_file:
+      - ".env"
+    depends_on:
+      - postgres
+
+  postgres:
+    restart: on-failure
+    image: postgres:16-alpine
+    env_file:
+      - ".env"
+    ports:
+      - "54320:5432"
+    volumes:
+      - "./data/postgres:/var/lib/postgresql/data"

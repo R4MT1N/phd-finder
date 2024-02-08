@@ -12,7 +12,7 @@ load_dotenv(Path(__file__).parent.joinpath('.env'), override=True)
 
 
 def single_position_markdown(position):
-    lines = [f"✍️ {position.title} [(Link)]({position.link})", f"🏫 {position.university.name}", f"⏰ {position.persian_end_date()}"]
+    lines = [f"✍️ {position.title}", f"🔗 [Link]({position.link})", f"🏫 {position.university.name} ({position.university.country})", f"⏰ {position.persian_end_date()}"]
     return '\n'.join(lines)
 
 async def notify_new_positions():
@@ -32,6 +32,8 @@ async def notify_current_day_positions():
 
     if lines:
         lines.insert(0, "⭐️ *Today Deadlines* ⭐️")
+    else:
+        return
 
     bot = Bot(os.getenv('TG_BOT_TOKEN'))
     chat_id = os.getenv('TG_CHANNEL_ID')
@@ -45,6 +47,8 @@ async def notify_current_week_positions():
 
     if lines:
         lines.insert(0, "⭐️ *This Week Deadlines* ⭐️")
+    else:
+        return
 
     bot = Bot(os.getenv('TG_BOT_TOKEN'))
     chat_id = os.getenv('TG_CHANNEL_ID')
@@ -58,6 +62,8 @@ async def notify_current_month_positions():
 
     if lines:
         lines.insert(0, "⭐️ *This Month Deadlines* ⭐️")
+    else:
+        return
 
     bot = Bot(os.getenv('TG_BOT_TOKEN'))
     chat_id = os.getenv('TG_CHANNEL_ID')

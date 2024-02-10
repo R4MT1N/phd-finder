@@ -11,7 +11,7 @@ services:
       - ".env"
     depends_on:
       - postgres
-    entrypoint: ['python', 'tgbot.py']
+    entrypoint: ['python', 'bot.py']
 
   scheduler:
     restart: on-failure

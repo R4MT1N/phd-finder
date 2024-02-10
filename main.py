@@ -11,9 +11,9 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 
-unis: List[Type[University]] = [KULeuven, Maastricht, Radboud, Twente, Vrije]#, Erasmus, Groningen, Leiden, Eindhoven,
-                                #Utrecht, Amsterdam, Delft, Umea, Lulea, Linkoping, Gothenburg, Lund, KTH, Uppsala,
-                                #Stockholm, Chalmers]
+unis: List[Type[University]] = [KULeuven, Maastricht, Radboud, Twente, Vrije, Erasmus, Groningen, Leiden, Eindhoven,
+                                Utrecht, Amsterdam, Delft, Umea, Lulea, Linkoping, Gothenburg, Lund, KTH, Uppsala,
+                                Stockholm, Chalmers]
 
 load_dotenv(Path(__file__).parent.joinpath('.env'), override=True)
 
@@ -48,16 +48,15 @@ if __name__ == '__main__':
         create_tables()
         print("Initialization is successfully done.")
     elif args.command == 'register_user':
-        user, is_created = User.get_or_create(id=args.user_id, defaults={'can_watch': args.can_watch, 'is_admin': False})
+        user, is_created = User.get_or_create(id=args.user_id, defaults={'is_admin': False})
 
         if is_created:
             print(f"User '{user.id}' is successfully registered.")
         else:
-            user.able_to_watch(args.can_watch)
-            print(f"User '{user.id}' is successfully updated.")
+            print(f"User '{user.id}' is already registered.")
 
     elif args.command == 'register-admin':
-        user, is_created = User.get_or_create(id=args.user_id, defaults={'is_admin': True, 'can_watch': True})
+        user, is_created = User.get_or_create(id=args.user_id, defaults={'is_admin': True})
 
         if is_created:
             print(f"Admin '{user.id}' is successfully registered.")

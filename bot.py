@@ -85,10 +85,6 @@ async def watch_channel_position_inline_handler(update: Update, context: Context
         await query.answer('You have to start the tgbot first', show_alert=True)
         return
 
-    if not user.can_watch:
-        await query.answer('You are not allowed to have watchlist', show_alert=True)
-        return
-
     try:
         position = Position.get_by_id(position_id)
     except DoesNotExist:
@@ -165,11 +161,6 @@ async def undo_unwatch_position_inline_handler(update: Update, context: Callback
     position_id = query.data.split('+')[1]
     user = User.get_by_id(query.from_user.id)
 
-    if not user.can_watch:
-        await query.answer('You are not allowed to have watchlist', show_alert=True)
-        await remove_message(query, user)
-        return
-
     try:
         position = Position.get_by_id(position_id)
     except DoesNotExist:
@@ -189,11 +180,6 @@ async def undo_restore_position_inline_handler(update: Update, context: Callback
     query = update.callback_query
     position_id = query.data.split('+')[1]
     user = User.get_by_id(query.from_user.id)
-
-    if not user.can_watch:
-        await query.answer('You are not allowed to have watchlist', show_alert=True)
-        await remove_message(query, user)
-        return
 
     try:
         position = Position.get_by_id(position_id)
@@ -325,10 +311,6 @@ async def my_ongoing_positions_intro_command_handler(update: Update, context: Co
         await update.message.reply_text('You are not a registered user. Ask an admin to do the registration.')
         return
 
-    if not user.can_watch:
-        await update.message.reply_text('You are not allowed to have watchlist.')
-        return
-
     num_live_positions = user.ongoing_positions(count=True)
 
     if num_live_positions == 0:
@@ -348,10 +330,6 @@ async def my_ongoing_positions_inline_handler(update: Update, context: ContextTy
 
     if (user := User.get_or_none(id=user_id)) is None:
         await query.edit_message_text('You are not a registered user. Ask an admin to do the registration.', ParseMode.MARKDOWN, reply_markup=None)
-        return
-
-    if not user.can_watch:
-        await query.edit_message_text('You are not allowed to have watchlist.', ParseMode.MARKDOWN, reply_markup=None)
         return
 
     num_positions = user.ongoing_positions(count=True)
@@ -377,10 +355,6 @@ async def my_expired_positions_intro_command_handler(update: Update, context: Co
         await update.message.reply_text('You are not a registered user. Ask an admin to do the registration.')
         return
 
-    if not user.can_watch:
-        await update.message.reply_text('You are not allowed to have watchlist.')
-        return
-
     num_positions = user.expired_positions(count=True)
 
     if num_positions == 0:
@@ -400,10 +374,6 @@ async def my_expired_positions_inline_handler(update: Update, context: ContextTy
     if (user := User.get_or_none(id=user_id)) is None:
         await query.edit_message_text('You are not a registered user. Ask an admin to do the registration.',
                                       ParseMode.MARKDOWN, reply_markup=None)
-        return
-
-    if not user.can_watch:
-        await query.edit_message_text('You are not allowed to have watchlist.', ParseMode.MARKDOWN, reply_markup=None)
         return
 
     num_positions = user.expired_positions(count=True)
@@ -430,10 +400,6 @@ async def removed_positions_command_handler(update: Update, context: ContextType
         await update.message.reply_text('You are not a registered user. Ask an admin to do the registration.', ParseMode.MARKDOWN, reply_markup=None)
         return
 
-    if not user.can_watch:
-        await update.message.reply_text('You are not allowed to have watchlist.', ParseMode.MARKDOWN, reply_markup=None)
-        return
-
     num_positions = Position.removed(count=True)
 
     if num_positions == 0:
@@ -453,10 +419,6 @@ async def removed_positions_inline_handler(update: Update, context: ContextTypes
     if (user := User.get_or_none(id=user_id)) is None:
         await query.edit_message_text('You are not a registered user. Ask an admin to do the registration.',
                                       ParseMode.MARKDOWN, reply_markup=None)
-        return
-
-    if not user.can_watch:
-        await query.edit_message_text('You are not allowed to have watchlist.', ParseMode.MARKDOWN, reply_markup=None)
         return
 
     num_positions = Position.removed(count=True)

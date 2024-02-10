@@ -20,6 +20,7 @@ async def notify_new_positions():
 
     for position in positions:
         await publish_position(bot, constants.CHANNEL_CHAT_ID, position)
+        time.sleep(0.5)
 
 async def remove_expired_messages():
     expired_messages = list(Message.expired_messages())

@@ -46,7 +46,6 @@ class University(BaseModel):
 class User(BaseModel):
     id = BigIntegerField(primary_key=True)
     is_admin = BooleanField(default=False)
-    can_watch = BooleanField(default=False)
     chat_id = BigIntegerField(null=True)
     created_at: datetime = DateTimeField(default=datetime.now)
 
@@ -72,12 +71,6 @@ class User(BaseModel):
 
     def update_chat_id(self, chat_id, save=True):
         self.chat_id = chat_id
-        if save:
-            self.save()
-        return self
-
-    def able_to_watch(self, can_watch, save=True):
-        self.can_watch = can_watch
         if save:
             self.save()
         return self

@@ -46,8 +46,9 @@ if __name__ == '__main__':
     if args.command == 'setup':
         create_tables()
         print("Initialization is successfully done.")
-    elif args.command == 'register_user':
-        user, is_created = User.get_or_create(id=args.user_id, defaults={'is_admin': False})
+
+    elif args.command == 'register-user':
+        user, is_created = User.get_or_create(id=args.user_id)
 
         if is_created:
             print(f"User '{user.id}' is successfully registered.")

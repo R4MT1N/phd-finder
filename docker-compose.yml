@@ -1,6 +1,18 @@
 version: "3.4"
 
 services:
+  tgbot:
+    restart: on-failure
+    build: .
+    image: r4mtin/phd-finder:latest
+    volumes:
+      - "./:/app"
+    env_file:
+      - ".env"
+    depends_on:
+      - postgres
+    entrypoint: ['python', 'tgbot.py']
+
   scheduler:
     restart: on-failure
     build: .

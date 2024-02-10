@@ -1,6 +1,6 @@
 import json
-from typing import List
 from lib import *
+
 
 class KTH(University):
     Vacancy_Link = "https://www.kth.se/lediga-jobb?l=en"

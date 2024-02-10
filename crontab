@@ -1,5 +1,5 @@
-*/5 * * * * /usr/local/bin/python /app/main.py --check > /proc/1/fd/1 2>&1
-*/5 * * * * /usr/local/bin/python /app/main.py --notify > /proc/1/fd/1 2>&1
-0 0 * * * /usr/local/bin/python /app/main.py --daily > /proc/1/fd/1 2>&1
-0 0 * * 6 /usr/local/bin/python /app/main.py --weekly > /proc/1/fd/1 2>&1
-0 0 1 * * /usr/local/bin/python /app/main.py --monthly > /proc/1/fd/1 2>&1
+*/5 * * * * /usr/local/bin/python /app/main.py --check > /proc/1/fd/1 2>/proc/1/fd/2
+*/5 * * * * /usr/local/bin/python /app/main.py --notify > /proc/1/fd/1 2>/proc/1/fd/2
+0 0 * * * /usr/local/bin/python /app/main.py --daily > /proc/1/fd/1 2>/proc/1/fd/2
+0 0 * * 6 /usr/local/bin/python /app/main.py --weekly > /proc/1/fd/1 2>/proc/1/fd/2
+0 0 1 * * /usr/local/bin/python /app/main.py --monthly > /proc/1/fd/1 2>/proc/1/fd/2

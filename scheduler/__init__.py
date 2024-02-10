@@ -1,1 +1,1 @@
-from .scheduler import notify_new_positions, notify_current_day_positions, notify_current_week_positions, notify_current_month_positions
+from .scheduler import notify_new_positions, remove_expired_messages

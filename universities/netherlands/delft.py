@@ -1,4 +1,3 @@
-from typing import List
 from lib import *
 
 
@@ -15,10 +14,10 @@ class Delft(University):
             return post_request(self.Vacancy_Link,
                                 headers={'Username': 'QEZFK026203F3VBQBLO6G68W9:guest:FO', 'Password': 'guest'},
                                 json={"searchCriteria": {"criteria": [{"key": "LOV25", "values": ["11383"]},
-                                                                       {"key": "LOV27", "values": ["11422"]},
-                                                                       {"key": "LOV28", "values": ["11564"]},
-                                                                       {"key": "Resultsperpage",
-                                                                        "values": ["100"]}]}}).json()['jobs']
+                                                                      {"key": "LOV27", "values": ["11422"]},
+                                                                      {"key": "LOV28", "values": ["11564"]},
+                                                                      {"key": "Resultsperpage",
+                                                                       "values": ["100"]}]}}).json()['jobs']
         except:
             return None
 

@@ -1,71 +1,40 @@
-from telegram import Bot, Message
-from telegram.constants import ParseMode
-from dotenv import load_dotenv
-from pathlib import Path
-from models.tables import Position
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-import time
 import os
+import time
+from pathlib import Path
+from dotenv import load_dotenv
+from telegram import Bot, error
+from tgbot import publish_position, constants
+from models.tables import Position, Message
 
 load_dotenv(Path(__file__).parent.joinpath('.env'), override=True)
 
-
-def single_position_markdown(position):
-    lines = [f"✍️ {position.title}", f"🔗 [Link]({position.link})", f"🏫 {position.university.name} ({position.university.country})", f"⏰ {position.persian_end_date()}"]
-    return '\n'.join(lines)
-
 async def notify_new_positions():
-    bot = Bot(os.getenv('TG_BOT_TOKEN'))
-    chat_id = os.getenv('TG_CHANNEL_ID')
+    positions = list(Position.news(per_page=10))
 
-    for position in Position.select().where(Position.telegram_message_id.is_null(True)).limit(10):
-        message = await bot.send_message(chat_id, single_position_markdown(position), ParseMode.MARKDOWN, disable_web_page_preview=True, write_timeout=5, read_timeout=5)
-        position.telegram_message_id = message.message_id
-        position.save()
-        time.sleep(1)
-
-async def notify_current_day_positions():
-    lines = []
-    for position in Position.select().where((Position.end_date >= datetime.now()) & (Position.end_date <= datetime.now() + relativedelta(days=1))):
-        lines += [f"\n{single_position_markdown(position)}"]
-
-    if lines:
-        lines.insert(0, "⭐️ *Today Deadlines* ⭐️")
-    else:
+    if not positions:
+        print("No new position were found.")
         return
 
-    bot = Bot(os.getenv('TG_BOT_TOKEN'))
-    chat_id = os.getenv('TG_CHANNEL_ID')
+    bot = Bot(constants.TG_BOT_TOKEN)
+    await bot.initialize()
 
-    await bot.send_message(chat_id, '\n'.join(lines), ParseMode.MARKDOWN, disable_web_page_preview=True)
+    for position in positions:
+        await publish_position(bot, constants.CHANNEL_CHAT_ID, position)
 
-async def notify_current_week_positions():
-    lines = []
-    for position in Position.select().where((Position.end_date >= datetime.now()) & (Position.end_date <= datetime.now() + relativedelta(weeks=1))):
-        lines += [f"\n{single_position_markdown(position)}"]
+async def remove_expired_messages():
+    expired_messages = list(Message.expired_messages())
 
-    if lines:
-        lines.insert(0, "⭐️ *This Week Deadlines* ⭐️")
-    else:
+    if not expired_messages:
+        print("No expired messages exist.")
         return
 
-    bot = Bot(os.getenv('TG_BOT_TOKEN'))
-    chat_id = os.getenv('TG_CHANNEL_ID')
+    bot = Bot(constants.TG_BOT_TOKEN)
+    await bot.initialize()
 
-    await bot.send_message(chat_id, '\n'.join(lines), ParseMode.MARKDOWN, disable_web_page_preview=True)
+    for message in expired_messages:
+        try:
+            await bot.delete_message(message.user.chat_id, message.id)
+        except error.BadRequest:
+            pass
 
-async def notify_current_month_positions():
-    lines = []
-    for position in Position.select().where((Position.end_date >= datetime.now()) & (Position.end_date <= datetime.now() + relativedelta(months=1))):
-        lines += [f"\n{single_position_markdown(position)}"]
-
-    if lines:
-        lines.insert(0, "⭐️ *This Month Deadlines* ⭐️")
-    else:
-        return
-
-    bot = Bot(os.getenv('TG_BOT_TOKEN'))
-    chat_id = os.getenv('TG_CHANNEL_ID')
-
-    await bot.send_message(chat_id, '\n'.join(lines), ParseMode.MARKDOWN, disable_web_page_preview=True)
+        message.delete_instance()

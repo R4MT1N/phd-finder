@@ -29,7 +29,6 @@ if __name__ == '__main__':
 
     parser_2 = subparsers.add_parser('register-user', help='Register a normal user')
     parser_2.add_argument('user_id', action='store', type=int, help='Telegram user id')
-    parser_2.add_argument('--can-watch', action='store_true', help='Ability to add the position to watchlist')
 
     parser_3 = subparsers.add_parser('register-admin', help='Register a user as admin')
     parser_3.add_argument('user_id', action='store', type=int, help='Telegram user id')

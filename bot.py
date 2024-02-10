@@ -414,7 +414,7 @@ async def removed_positions_command_handler(update: Update, context: ContextType
 async def removed_positions_inline_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     query = update.callback_query
-    page = query.data
+    page = query.data.split('+')[1]
 
     if (user := User.get_or_none(id=user_id)) is None:
         await query.edit_message_text('You are not a registered user. Ask an admin to do the registration.',

@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   tgbot:
-    restart: on-failure
+    restart: unless-stopped
     build: .
     image: r4mtin/phd-finder:latest
     volumes:
@@ -14,7 +14,7 @@ services:
     entrypoint: ['python', 'bot.py']
 
   scheduler:
-    restart: on-failure
+    restart: unless-stopped
     build: .
     image: r4mtin/phd-finder:latest
     volumes:
@@ -25,7 +25,7 @@ services:
       - postgres
 
   postgres:
-    restart: on-failure
+    restart: unless-stopped
     image: postgres:16-alpine
     env_file:
       - ".env"

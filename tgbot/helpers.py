@@ -50,8 +50,8 @@ def my_ongoing_positions(user, page: str, per_page, total_num):
 
     lines = [f"*My Ongoing Positions* - {(page - 1) * per_page + 1} to {min(total_num, page * per_page)} from {total_num}"]
 
-    for index, position in enumerate(user.ongoing_positions(page=page, per_page=5)):
-        lines += [f"\n{format_ongoing_position(5 * (page - 1) + index + 1, position)}"]
+    for index, position in enumerate(user.ongoing_positions(page=page, per_page=per_page)):
+        lines += [f"\n{format_ongoing_position(per_page * (page - 1) + index + 1, position)}"]
 
     text = '\n'.join(lines)
 
@@ -79,8 +79,8 @@ def removed_positions(user, page: str, per_page, total_num):
 
     lines = [f"*Removed Positions* - {(page - 1) * per_page + 1} to {min(total_num, page * per_page)} from {total_num}"]
 
-    for index, position in enumerate(Position.removed(page=page, per_page=5)):
-        lines += [f"\n{format_removed_position(5 * (page - 1) + index + 1, position)}"]
+    for index, position in enumerate(Position.removed(page=page, per_page=per_page)):
+        lines += [f"\n{format_removed_position(per_page * (page - 1) + index + 1, position)}"]
 
     text = '\n'.join(lines)
 
@@ -108,8 +108,8 @@ def my_expired_positions(user, page: str, per_page, total_num):
 
     lines = [f"*My Expired Positions* - {(page - 1) * per_page + 1} to {min(total_num, page * per_page)} from {total_num}"]
 
-    for index, position in enumerate(user.expired_positions(page=page, per_page=5)):
-        lines += [f"\n{format_ongoing_position(5 * (page - 1) + index + 1, position)}"]
+    for index, position in enumerate(user.expired_positions(page=page, per_page=per_page)):
+        lines += [f"\n{format_ongoing_position(per_page * (page - 1) + index + 1, position)}"]
 
     text = '\n'.join(lines)
 

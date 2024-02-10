@@ -1,8 +1,8 @@
-from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from telegram.constants import ParseMode
 from tgbot.constants import *
 from math import ceil
-from models import Position
+from models import Position, Message
 
 def format_ongoing_position(index, position):
     lines = [f"*{index}.* [{position.title}]({position.link})", f"{position.university.name} - {position.persian_end_date()}",
@@ -19,6 +19,10 @@ def format_channel_position(position):
              f"🏫 *Employer*: {position.university.name} ({position.university.country})",
              f"⏰ *Deadline*: {position.persian_end_date()}"]
     return '\n'.join(lines)
+
+async def remove_message(query: CallbackQuery, user):
+    await query.message.delete()
+    Message.remove(user, query.message.id)
 
 async def send_single_position(bot: Bot, chat_id, position, silent=False):
     message = format_channel_position(position)

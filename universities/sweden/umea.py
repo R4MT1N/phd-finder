@@ -20,6 +20,6 @@ class Umea(University):
 
         for row in rows:
             title = clean_text(row.select_one('.jobbRow a.jobbTitle').text)
-            link = row.select_one('.jobbRow a.jobbTitle').attrs['href']
+            link = join_urls(self.Vacancy_Link, row.select_one('.jobbRow a.jobbTitle').attrs['href'])
             expire_at = read_date(clean_text(row.select_one('.jobbRow .applybydate').text), "%Y-%m-%d")
             self.add_position(link, title, expire_at)

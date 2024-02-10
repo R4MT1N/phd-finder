@@ -1,14 +1,13 @@
-from math import ceil
+import logging
+from pathlib import Path
 from random import choice
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, error, CallbackQuery
+from dotenv import load_dotenv
+from peewee import DoesNotExist
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, error
+from telegram.constants import ParseMode
 from telegram.ext import Application, CallbackQueryHandler, CommandHandler, ContextTypes, filters, \
     CallbackContext, MessageHandler
-from telegram.constants import ParseMode
-from dotenv import load_dotenv
-from pathlib import Path
-from peewee import DoesNotExist
-from models.tables import Position, User, Message, UserPosition
-import logging
+from models import Position, User, Message, UserPosition
 from tgbot import *
 
 load_dotenv(Path(__file__).parent.joinpath('.env'), override=True)
@@ -38,17 +37,13 @@ logger.setLevel(logging.INFO)
 async def remove_channel_position_inline_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     position_id = query.data.split('+')[1]
-    chat_id = update.effective_chat.id
 
-    try:
-        if (user := User.get_or_none(id=query.from_user.id, is_admin=True)) is None:
-            raise DoesNotExist()
-    except DoesNotExist:
+    if (user := User.get_or_none(id=query.from_user.id, is_admin=True)) is None:
         await query.answer('Only admins can do that', show_alert=True)
         return
 
     if user.chat_id is None:
-        await query.answer('You have to start the tgbot first', show_alert=True)
+        await query.answer('You have to start the bot first', show_alert=True)
         return
 
     try:
@@ -108,16 +103,11 @@ async def watch_channel_position_inline_handler(update: Update, context: Context
     message = await context.bot.send_message(user.chat_id, f'Position "{position.title}" is added to watchlist.', reply_markup=reply_markup)
     Message.add(user, message.id)
 
-async def remove_message(query: CallbackQuery, user):
-    await query.message.delete()
-    Message.remove(user, query.message.id)
-
 # -------------------------------------------------------------
 
 async def undo_remove_position_inline_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     position_id = query.data.split('+')[1]
-
     user = User.get_by_id(query.from_user.id)
 
     if not user.is_admin:
@@ -235,18 +225,12 @@ async def cancel_inline_handler(update: Update, context: CallbackContext):
 
 async def unwatch_position_command_handler(update: Update, context: CallbackContext):
     position_id = update.message.text.replace(f'/{UNWATCH_COMMAND}', '')
-    user_id = update.effective_user.id
-
-    try:
-        user = User.get_by_id(user_id)
-    except DoesNotExist:
-        await update.message.reply_text('Only admins can do that')
-        return
+    user = User.get_by_id(update.effective_user.id)
 
     try:
         position = Position.get_by_id(position_id)
     except DoesNotExist:
-        await update.message.reply_text('The position is invalid')
+        await update.message.reply_text(f'The position id ({position_id}) is invalid')
         return
 
     user.positions.remove(position)
@@ -263,11 +247,9 @@ async def unwatch_position_command_handler(update: Update, context: CallbackCont
 
 async def restore_position_command_handler(update: Update, context: CallbackContext):
     position_id = update.message.text.replace(f'/{RESTORE_COMMAND}', '')
-    user_id = update.effective_user.id
+    user = User.get_by_id(update.effective_user.id)
 
-    try:
-        user = User.get_by_id(user_id)
-    except DoesNotExist:
+    if not user.is_admin:
         await update.message.reply_text('Only admins can do that')
         return
 
@@ -344,7 +326,7 @@ async def my_ongoing_positions_inline_handler(update: Update, context: ContextTy
 
     try:
         await query.edit_message_text(text, ParseMode.MARKDOWN, reply_markup=reply_markup, disable_web_page_preview=True)
-    except error.BadRequest as err:
+    except error.BadRequest:
         await query.answer('Nothing has changed since yet.')
 
 async def my_expired_positions_intro_command_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -388,12 +370,11 @@ async def my_expired_positions_inline_handler(update: Update, context: ContextTy
 
     try:
         await query.edit_message_text(text, ParseMode.MARKDOWN, reply_markup=reply_markup, disable_web_page_preview=True)
-    except error.BadRequest as err:
+    except error.BadRequest:
         await query.answer('Nothing has changed since yet.')
 
 async def removed_positions_command_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
-    query = update.callback_query
     page = '1'
 
     if (user := User.get_or_none(id=user_id)) is None:
@@ -434,7 +415,7 @@ async def removed_positions_inline_handler(update: Update, context: ContextTypes
     try:
         await query.edit_message_text(text, ParseMode.MARKDOWN, reply_markup=reply_markup,
                                       disable_web_page_preview=True)
-    except error.BadRequest as err:
+    except error.BadRequest:
         await query.answer('Nothing has changed since yet.')
 
 

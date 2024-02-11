@@ -80,29 +80,35 @@ def generate_position_list(query: Query, title: str, page: int, per_page: int, t
 
     return text, reply_markup
 
-def my_ongoing_positions(user, page, per_page, total_num):
-    if total_num == 0:
+def my_ongoing_positions(user, page, per_page):
+    query = user.ongoing_positions()
+
+    if (total_num := query.count()) == 0:
         reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(REFRESH_BTN, callback_data=f'{MY_ONGOING_POSITIONS_INLINE}{COMMAND_SEP}1')]])
         text = 'No ongoing position is in watchlist.'
         return text, reply_markup
     else:
-        return generate_position_list(user.ongoing_positions(), 'Ongoing Positions', page, per_page, total_num, MY_ONGOING_POSITIONS_INLINE)
+        return generate_position_list(query, 'Ongoing Positions', page, per_page, total_num, MY_ONGOING_POSITIONS_INLINE)
 
-def my_expired_positions(user, page, per_page, total_num):
-    if total_num == 0:
+def my_expired_positions(user, page, per_page):
+    query = user.expired_positions()
+
+    if (total_num := query.count()) == 0:
         reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(REFRESH_BTN, callback_data=f'{MY_EXPIRED_POSITIONS_INLINE}{COMMAND_SEP}1')]])
         text = 'No expired position is in watchlist.'
         return text, reply_markup
     else:
-        return generate_position_list(user.expired_positions(), 'Expired Positions', page, per_page, total_num, MY_EXPIRED_POSITIONS_INLINE)
+        return generate_position_list(query, 'Expired Positions', page, per_page, total_num, MY_EXPIRED_POSITIONS_INLINE)
 
 def removed_positions(page, per_page, total_num):
-    if total_num == 0:
+    query = Position.removed()
+
+    if (total_num := query.count()) == 0:
         reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(REFRESH_BTN, callback_data=f'{REMOVED_POSITIONS_INLINE}{COMMAND_SEP}1')]])
         text = 'No removed position were found.'
         return text, reply_markup
     else:
-        return generate_position_list(Position.removed(), 'Removed Positions', page, per_page, total_num, REMOVED_POSITIONS_INLINE)
+        return generate_position_list(query, 'Removed Positions', page, per_page, total_num, REMOVED_POSITIONS_INLINE)
 
 def upcoming_week_positions(user, page, per_page):
     query = user.upcoming_deadlines(weeks=1)

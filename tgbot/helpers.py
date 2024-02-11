@@ -100,7 +100,7 @@ def my_expired_positions(user, page, per_page):
     else:
         return generate_position_list(query, 'Expired Positions', page, per_page, total_num, MY_EXPIRED_POSITIONS_INLINE)
 
-def removed_positions(page, per_page, total_num):
+def removed_positions(page, per_page):
     query = Position.removed()
 
     if (total_num := query.count()) == 0:

@@ -1,6 +1,4 @@
 import time
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
 from telegram import Bot, error
 from telegram.constants import ParseMode
 

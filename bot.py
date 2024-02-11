@@ -177,8 +177,7 @@ async def my_ongoing_positions_intro_command_handler(update: Update, context: Co
         await update.message.reply_text(ONLY_REGISTERED_USER_ALLOWED)
         return
 
-    num_live_positions = user.ongoing_positions(count=True)
-    text, reply_markup = my_ongoing_positions(user, page, 5, num_live_positions)
+    text, reply_markup = my_ongoing_positions(user, page, 5)
 
     await update.message.reply_text(text, ParseMode.MARKDOWN, reply_markup=reply_markup, disable_web_page_preview=True)
 
@@ -190,8 +189,7 @@ async def my_ongoing_positions_inline_handler(update: Update, context: ContextTy
         await update.message.reply_text(ONLY_REGISTERED_USER_ALLOWED)
         return
 
-    num_positions = user.ongoing_positions(count=True)
-    text, reply_markup = my_ongoing_positions(user, page, 5, num_positions)
+    text, reply_markup = my_ongoing_positions(user, page, 5)
 
     try:
         await query.edit_message_text(text, ParseMode.MARKDOWN, reply_markup=reply_markup, disable_web_page_preview=True)
@@ -205,8 +203,7 @@ async def my_expired_positions_intro_command_handler(update: Update, context: Co
         await update.message.reply_text(ONLY_REGISTERED_USER_ALLOWED)
         return
 
-    num_positions = user.expired_positions(count=True)
-    text, reply_markup = my_expired_positions(user, page, 5, num_positions)
+    text, reply_markup = my_expired_positions(user, page, 5)
 
     await update.message.reply_text(text, ParseMode.MARKDOWN, reply_markup=reply_markup, disable_web_page_preview=True)
 
@@ -218,8 +215,7 @@ async def my_expired_positions_inline_handler(update: Update, context: ContextTy
         await query.edit_message_text(ONLY_REGISTERED_USER_ALLOWED, ParseMode.MARKDOWN, reply_markup=None)
         return
 
-    num_positions = user.expired_positions(count=True)
-    text, reply_markup = my_expired_positions(user, page, 5, num_positions)
+    text, reply_markup = my_expired_positions(user, page, 5)
 
     try:
         await query.edit_message_text(text, ParseMode.MARKDOWN, reply_markup=reply_markup, disable_web_page_preview=True)
@@ -233,8 +229,7 @@ async def removed_positions_command_handler(update: Update, context: ContextType
         await update.message.reply_text(ONLY_ADMINS_ALLOWED, ParseMode.MARKDOWN)
         return
 
-    num_positions = Position.removed(count=True)
-    text, reply_markup = removed_positions(page, 5, num_positions)
+    text, reply_markup = removed_positions(page, 5)
 
     await update.message.reply_text(text, ParseMode.MARKDOWN, reply_markup=reply_markup, disable_web_page_preview=True)
 
@@ -246,8 +241,7 @@ async def removed_positions_inline_handler(update: Update, context: ContextTypes
         await query.edit_message_text(ONLY_ADMINS_ALLOWED, ParseMode.MARKDOWN, reply_markup=None)
         return
 
-    num_positions = Position.removed(count=True)
-    text, reply_markup = removed_positions(page, 5, num_positions)
+    text, reply_markup = removed_positions(page, 5)
 
     try:
         await query.edit_message_text(text, ParseMode.MARKDOWN, reply_markup=reply_markup, disable_web_page_preview=True)

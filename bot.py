@@ -197,7 +197,7 @@ async def my_ongoing_positions_inline_handler(update: Update, context: ContextTy
         await query.answer(NOTHING_CHANGED)
 
 async def my_expired_positions_intro_command_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    page = '1'
+    page = 1
 
     if (user := User.get_or_none(id=update.effective_user.id)) is None:
         await update.message.reply_text(ONLY_REGISTERED_USER_ALLOWED)
@@ -223,7 +223,7 @@ async def my_expired_positions_inline_handler(update: Update, context: ContextTy
         await query.answer(NOTHING_CHANGED)
 
 async def removed_positions_command_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    page = '1'
+    page = 1
 
     if (user := User.get_or_none(id=update.effective_user.id)) is None or not user.is_admin:
         await update.message.reply_text(ONLY_ADMINS_ALLOWED, ParseMode.MARKDOWN)

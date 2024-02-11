@@ -1,6 +1,8 @@
 from __future__ import annotations
 from datetime import datetime, timedelta
 import jdatetime
+from dateutil.relativedelta import relativedelta
+from peewee import Query
 from playhouse.signals import Model as PModel
 from peewee import *
 import os
@@ -55,19 +57,19 @@ class User(BaseModel):
     def unwatch_position(self, position: Position):
         UserPosition.delete().where((UserPosition.user == self) & (UserPosition.position == position)).execute()
 
-    def ongoing_positions(self, page=1, per_page=None, count=False):
-        query = Position.select().join(UserPosition).join(User).where((User.id == self.id) & (Position.removed_at.is_null(True)) & (Position.end_date >= datetime.now()))
-        if count:
-            return query.count()
-        else:
-            return query.order_by(Position.end_date.asc()).paginate(page, per_page or Position.PER_PAGE)
+    def ongoing_positions(self) -> Query:
+        return Position.select().join(UserPosition).join(User).where((User.id == self.id) & (Position.removed_at.is_null(True)) & (Position.end_date >= datetime.now())).order_by(Position.end_date.asc())
 
-    def expired_positions(self, page=1, per_page=None, count=False):
-        query = Position.select().join(UserPosition).join(User).where((User.id == self.id) & (Position.removed_at.is_null(True)) & (Position.end_date < datetime.now()))
-        if count:
-            return query.count()
-        else:
-            return query.order_by(Position.end_date.asc()).paginate(page, per_page or Position.PER_PAGE)
+    def expired_positions(self) -> Query:
+        return Position.select().join(UserPosition).join(User).where((User.id == self.id) & (Position.removed_at.is_null(True)) & (Position.end_date < datetime.now())).order_by(Position.end_date.asc())
+
+    def upcoming_deadlines(self, days=1, weeks=0, months=0) -> Query:
+        rel_delta = relativedelta(days=days, weeks=weeks, months=months)
+
+        return Position.select(Position) \
+            .join(UserPosition) \
+            .where((UserPosition.user == self) & (Position.removed_at.is_null(True)) & (Position.end_date >= datetime.now()) & (
+                    Position.end_date <= datetime.now() + rel_delta)).order_by(Position.end_date.asc())
 
     def update_chat_id(self, chat_id, save=True):
         self.chat_id = chat_id
@@ -117,21 +119,13 @@ class Position(BaseModel):
         return self
 
     @classmethod
-    def removed(cls, page=1, per_page=None, count=False):
-        query = cls.select().where(cls.removed_at.is_null(False)).order_by(cls.end_date.asc())
-        if count:
-            return query.count()
-        else:
-            return query.paginate(page, per_page or cls.PER_PAGE)
+    def removed(cls) -> Query:
+        return cls.select().where(cls.removed_at.is_null(False)).order_by(cls.end_date.asc())
 
     @classmethod
-    def near_deadlines(cls, rel_time, page=1, per_page=None, count=False):
-        query = Position.select().where((Position.removed_at.is_null(True)) & (Position.end_date >= datetime.now()) & (
+    def near_deadlines(cls, rel_time):
+        return Position.select().where((Position.removed_at.is_null(True)) & (Position.end_date >= datetime.now()) & (
                     Position.end_date <= datetime.now() + rel_time)).order_by(Position.end_date.asc())
-        if count:
-            return query.count()
-        else:
-            return query.paginate(page, per_page or cls.PER_PAGE)
 
     @classmethod
     def news(cls, page=1, per_page=None):

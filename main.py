@@ -37,9 +37,11 @@ if __name__ == '__main__':
     parser_4.add_argument('user_id', action='store', type=int, help='Telegram user id')
 
     parser_5 = subparsers.add_parser('notify', help='Notify positions')
-    parser_5.add_argument('--type', choices=['new', 'day', 'week', 'month'], default='new')
 
-    parser_6 = subparsers.add_parser('prune', help='Remove expired telegram messages')
+    parser_6 = subparsers.add_parser('remind', help='Remind upcoming deadlines')
+    parser_6.add_argument('--type', choices=['day', 'week', 'month'], default='new')
+
+    parser_7 = subparsers.add_parser('prune', help='Remove expired telegram messages')
 
     args = parser.parse_args()
 
@@ -80,14 +82,13 @@ if __name__ == '__main__':
                 uni_model.save()
 
     elif args.command == 'notify':
-        if args.type == 'new':
-            asyncio.get_event_loop().run_until_complete(notify_new_positions())
-        # elif args.type == 'day':
-        #     asyncio.get_event_loop().run_until_complete(notify_future_positions("Day", days=1))
-        # elif args.type == 'week':
-        #     asyncio.get_event_loop().run_until_complete(notify_future_positions("Week", weeks=1))
-        # elif args.type == 'month':
-        #     asyncio.get_event_loop().run_until_complete(notify_future_positions("Month", months=1))
+        asyncio.get_event_loop().run_until_complete(notify_new_positions())
+
+    elif args.command == 'remind':
+        if args.type == 'day':
+            asyncio.get_event_loop().run_until_complete(remind_daily_deadlines())
+        elif args.type == 'week':
+            asyncio.get_event_loop().run_until_complete(remind_weekly_deadlines())
 
     elif args.command == 'prune':
         asyncio.get_event_loop().run_until_complete(remove_expired_messages())

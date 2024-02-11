@@ -1,3 +1,6 @@
-0 * * * * /usr/local/bin/python /app/main.py check > /proc/1/fd/1 2>/proc/1/fd/2
+TZ=Asia/Tehran
 * * * * * /usr/local/bin/python /app/main.py notify > /proc/1/fd/1 2>/proc/1/fd/2
 * * * * * /usr/local/bin/python /app/main.py prune > /proc/1/fd/1 2>/proc/1/fd/2
+0 * * * * /usr/local/bin/python /app/main.py check > /proc/1/fd/1 2>/proc/1/fd/2
+0 0 * * 6 /usr/local/bin/python /app/main.py remind --type week > /proc/1/fd/1 2>/proc/1/fd/2
+0 0 * * * /usr/local/bin/python /app/main.py remind --type day > /proc/1/fd/1 2>/proc/1/fd/2

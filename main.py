@@ -98,7 +98,7 @@ if __name__ == '__main__':
             print(f"User '{user.id}' is already registered.")
 
     elif args.command == 'register-admin':
-        user, is_created = User.get_or_create(id=args.user_id, default={'is_admin': True})
+        user, is_created = User.get_or_create(id=args.user_id, defaults={'is_admin': True})
 
         if is_created:
             print(f"Admin '{user.id}' is successfully registered.")

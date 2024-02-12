@@ -137,7 +137,7 @@ class Position(BaseModel):
 
     @classmethod
     def removed(cls) -> Query:
-        return Position.select().where(cls.removed_at.is_null(False)).order_by(cls.end_date.asc())
+        return Position.select().where(cls.removed_at.is_null(False)).order_by(cls.removed_at.desc())
 
     @classmethod
     def near_deadlines(cls, rel_time):

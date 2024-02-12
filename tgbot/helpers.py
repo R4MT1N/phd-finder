@@ -162,7 +162,7 @@ def university_positions(user: User, university: University, page, per_page):
     query = university.published_positions()
 
     if (total_num := query.count()) == 0:
-        reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(REFRESH_BTN, callback_data=COMMAND_SEP.join([UNIVERSITY_POSITIONS_INLINE, str(university.id), 1]))]])
+        reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(REFRESH_BTN, callback_data=COMMAND_SEP.join([UNIVERSITY_POSITIONS_INLINE, str(university.id), str(1)]))]])
         text = fm(f'No positions were found in {university.name}.')
 
         return text, reply_markup

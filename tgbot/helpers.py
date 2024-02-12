@@ -69,20 +69,15 @@ def format_bot_position(user: User, index, position: Position):
     return '\n'.join(lines)
 
 def format_bot_university(user: User, index, university: University):
-    lines = [f"*{fm(index, '.', sep='')}* {fm(university.name, bold=True)}",
-             f"{fm(university.position_count, 'positions', italic=True)}"]
-
-    if (watched_positions := user.watched_positions(university).count()) > 0:
-        lines[-1] += " " + fm(f"({watched_positions} watched)", italic=True)
-
-    lines[-1] += " " + fm(f'/{UNIVERSITY_POSITIONS_COMMAND}{university.id}')
+    lines = [f"*{fm(index, '.', sep='')}* {fm(university.name, bold=True)} {f'/{UNIVERSITY_POSITIONS_COMMAND}{university.id}'}",
+             f"{fm(f'Ongoing: {university.position_count}', italic=True)}"]
 
     t_delta = datetime.now() - university.next_check_at
 
     if t_delta.total_seconds() < 0:
-        lines.append(fm(f"Next update in {humanize.naturaltime(t_delta)}", italic=True))
+        lines.append(fm(f"🔄 {humanize.naturaltime(t_delta)}", italic=True))
     else:
-        lines.append(fm(f"Updated {humanize.naturaltime(t_delta)}", italic=True))
+        lines.append(fm(f"🔄 {humanize.naturaltime(t_delta)}", italic=True))
 
     return '\n'.join(lines)
 
@@ -186,7 +181,7 @@ def university_list(user: User, page, per_page):
 
         return text, reply_markup
     else:
-        return generate_university_list(user, query, f'List of Universities', page, per_page, total_num, UNIVERSITIES_INLINE)
+        return generate_university_list(user, query, f'Universities', page, per_page, total_num, UNIVERSITIES_INLINE)
 
 def my_ongoing_positions(user: User, page, per_page):
     query = user.ongoing_positions()

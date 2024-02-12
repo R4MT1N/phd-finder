@@ -123,7 +123,7 @@ def generate_removed_position_list(user, query: Query, title: str, page: int, pe
         f"*{title}*", f"{(page - 1) * per_page + 1} to {min(total, page * per_page)} from {total}"]
 
     for index, position in enumerate(query.paginate(page, per_page)):
-        lines += [f"\n{format_removed_position(user, per_page * (page - 1) + index + 1, position)}"]
+        lines += [f"\n{format_removed_position(per_page * (page - 1) + index + 1, position)}"]
 
     text = '\n'.join(lines)
     reply_markup = pagination_reply_markup(page, total_pages, paging_inline_command)

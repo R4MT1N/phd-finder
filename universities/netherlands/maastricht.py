@@ -23,4 +23,4 @@ class Maastricht(University):
             title = clean_text(job.select_one('td.colTitle a').text)
             link = join_urls(self.Vacancy_Link, job.select_one('td.colTitle a').attrs['href'])
             end_at = read_date(clean_text(job.select_one('span.jobShifttype').text), '%d-%m-%Y')
-            self.add_position(link, title, end_at)
+            self.save_position(link, title, end_at)

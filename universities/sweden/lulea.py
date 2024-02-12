@@ -31,4 +31,4 @@ class Lulea(University):
 
             link = job['link']
             expire_at = read_date(clean_text(job['expirationDate']), "%Y-%m-%d")
-            self.add_position(link, title, expire_at)
+            self.save_position(link, title, expire_at)

@@ -25,4 +25,4 @@ class Eindhoven(University):
             title = clean_text(job.select_one('h2').attrs['title'])
             link = job.select_one('h2 a').attrs['href']
             expire_at = read_date(job.select_one('span.job_date').text, '%d %B %Y')
-            self.add_position(link, title, expire_at)
+            self.save_position(link, title, expire_at)

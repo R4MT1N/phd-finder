@@ -33,7 +33,8 @@ class Country(BaseModel):
         db_table = 'countries'
 
 class University(BaseModel):
-    name = CharField(max_length=100, unique=True, primary_key=True)
+    id = AutoField()
+    name = CharField(max_length=100, unique=True)
     country = ForeignKeyField(Country, backref='universities')
     vacancy_link = CharField(max_length=250)
     usn_rank = IntegerField(null=True)
@@ -45,6 +46,13 @@ class University(BaseModel):
     class Meta:
         db_table = 'universities'
 
+    def published_positions(self) -> Query:
+        return self.positions.where((Position.end_date > datetime.now() - relativedelta(days=7)) & (Position.removed_at.is_null(True))).order_by(Position.end_date.asc())
+
+    @staticmethod
+    def search(query, limit=5):
+        return University.select().where(University.name.iregexp(query)).limit(limit)
+
 class User(BaseModel):
     id = BigIntegerField(primary_key=True)
     is_admin = BooleanField(default=False)
@@ -54,8 +62,11 @@ class User(BaseModel):
     class Meta:
         db_table = 'users'
 
+    def has_watched(self, position: Position) -> bool:
+        return UserPosition.select().where((UserPosition.user == self) & (UserPosition.position == position)).exists()
+
     def unwatch_position(self, position: Position):
-        UserPosition.delete().where((UserPosition.user == self) & (UserPosition.position == position)).execute()
+        return UserPosition.delete().where((UserPosition.user == self) & (UserPosition.position == position)).execute()
 
     def ongoing_positions(self) -> Query:
         return Position.select().join(UserPosition).join(User).where((User.id == self.id) & (Position.removed_at.is_null(True)) & (Position.end_date >= datetime.now())).order_by(Position.end_date.asc())
@@ -118,6 +129,12 @@ class Position(BaseModel):
             self.save()
         return self
 
+    def is_removed(self) -> bool:
+        return self.removed_at is not None
+
+    def is_expired(self):
+        return self.end_date < datetime.now().date()
+
     @classmethod
     def removed(cls) -> Query:
         return Position.select().where(cls.removed_at.is_null(False)).order_by(cls.end_date.asc())
@@ -128,8 +145,8 @@ class Position(BaseModel):
                     Position.end_date <= datetime.now() + rel_time)).order_by(Position.end_date.asc())
 
     @classmethod
-    def news(cls, page=1, per_page=None):
-        return Position.select().where((cls.published_at.is_null(True)) & (cls.removed_at.is_null(True))).order_by(cls.end_date.asc()).paginate(page, per_page or cls.PER_PAGE)
+    def news(cls) -> Query:
+        return Position.select().where((cls.published_at.is_null(True)) & (cls.removed_at.is_null(True))).order_by(cls.end_date.asc())
 
 
 class UserPosition(BaseModel):
@@ -169,3 +186,7 @@ Position._meta.add_field('users', User.positions)
 def create_tables():
     with db:
         db.create_tables([Country, University, Position, User, UserPosition, Message])
+
+def drop_tables():
+    with db:
+        db.drop_tables([Message, UserPosition, User, Position, University, Country])

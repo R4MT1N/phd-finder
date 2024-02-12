@@ -29,4 +29,4 @@ class Groningen(University):
             title = clean_text(job.select_one('div.rug-mb-s a').text)
             link = join_urls(self.Vacancy_Link, job.select_one('div.rug-mb-s a').attrs['href'])
             end_at = read_date(clean_text(job.select('div.rug-layout .rug-layout__item')[5].text), '%B %d, %Y')
-            self.add_position(link, title, end_at)
+            self.save_position(link, title, end_at)

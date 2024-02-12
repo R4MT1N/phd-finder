@@ -30,4 +30,4 @@ class Twente(University):
             link = job.select_one('a.vacancies__results__vacancy').attrs['href']
             end_at = read_date(clean_text(job.select('span.vacancies__results__vacancy__date')[1].find(text=True, recursive=False)), '%d %b %Y')
             start_at = read_date(clean_text(job.select('span.vacancies__results__vacancy__date')[0].find(text=True, recursive=False)), '%d %b %Y')
-            self.add_position(link, title, end_at, start_at)
+            self.save_position(link, title, end_at, start_at)

@@ -24,4 +24,4 @@ class Erasmus(University):
             link = job.select_one('h3.teaser__title a').attrs['href']
             end_at = read_date(clean_text(job.select('li.list__item--meta')[1].text), '%A %d %b %Y')
             start_at = read_date(clean_text(job.select('li.list__item--meta')[0].text), '%A %d %b %Y')
-            self.add_position(link, title, end_at, start_at)
+            self.save_position(link, title, end_at, start_at)

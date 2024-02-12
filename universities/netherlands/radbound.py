@@ -24,4 +24,4 @@ class Radboud(University):
             link = join_urls(self.Vacancy_Link, job.select_one('h2.card__title a').attrs['href'])
             job_details = BeautifulSoup(get_request(link).content, 'html.parser')
             end_at = read_date(clean_text(job_details.select('div.definitionlist__item time')[-1].attrs['datetime']), '%Y-%m-%dT%H:%M:%SZ')
-            self.add_position(link, title, end_at)
+            self.save_position(link, title, end_at)

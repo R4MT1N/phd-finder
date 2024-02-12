@@ -26,4 +26,4 @@ class Uppsala(University):
             link = join_urls(self.Vacancy_Link, row.select_one('a').attrs['href'])
             expire_at = read_date(row.select('a p')[1].text.split(':')[1].strip(), "%Y-%m-%d")
             published_at = read_date(row.select_one('a span').text, "%Y-%m-%d")
-            self.add_position(link, title, expire_at, published_at)
+            self.save_position(link, title, expire_at, published_at)

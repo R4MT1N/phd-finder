@@ -26,4 +26,4 @@ class Lund(University):
             link = row.select_one('td h2 a').attrs['href']
             expire_at = read_date(row.attrs['data-job-ends'], "%Y-%m-%d")
             published_at = read_date(row.attrs['data-job-published'], "%Y-%m-%d")
-            self.add_position(link, title, expire_at, published_at)
+            self.save_position(link, title, expire_at, published_at)

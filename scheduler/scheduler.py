@@ -1,15 +1,14 @@
 import time
 from telegram import Bot, error
 from telegram.constants import ParseMode
-
 from tgbot.helpers import generate_position_list
-from models.tables import Position, Message, User, UserPosition
+from models.tables import Position, Message, User
 from tgbot import publish_position
 from tgbot.constants import *
 
 
 async def notify_new_positions():
-    positions = list(Position.news(per_page=10))
+    positions = list(Position.news().paginate(1, 10))
 
     if not positions:
         print("No new position were found.")
@@ -50,7 +49,7 @@ async def remind_weekly_deadlines():
         if (total := query.count()) == 0:
             continue
 
-        text, reply_markup = generate_position_list(query, UPCOMING_WEEK_DEADLINES, 1, 5, total, UPCOMING_WEEK_DEADLINES_INLINE)
+        text, reply_markup = generate_position_list(user, query, UPCOMING_WEEK_DEADLINES_TITLE, 1, 5, total, UPCOMING_WEEK_DEADLINES_INLINE)
         await bot.send_message(user.chat_id, text, ParseMode.MARKDOWN, reply_markup=reply_markup, disable_web_page_preview=True)
 
 async def remind_daily_deadlines():
@@ -62,7 +61,7 @@ async def remind_daily_deadlines():
         if (total := query.count()) == 0:
             continue
 
-        text, reply_markup = generate_position_list(query, UPCOMING_DAY_DEADLINES, 1, 5, total, UPCOMING_DAY_DEADLINES_INLINE)
+        text, reply_markup = generate_position_list(user, query, UPCOMING_DAY_DEADLINES_TITLE, 1, 5, total, UPCOMING_DAY_DEADLINES_INLINE)
 
         await bot.initialize()
         await bot.send_message(user.chat_id, text, ParseMode.MARKDOWN, reply_markup=reply_markup, disable_web_page_preview=True)

@@ -1,9 +1,11 @@
-from peewee import Query
+from datetime import datetime
+
+from peewee import Query, fn
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from telegram.constants import ParseMode
 from tgbot.constants import *
 from math import ceil
-from models import Position, Message
+from models import Position, Message, User, University
 
 
 def pagination_reply_markup(page, total_pages, inline_command):
@@ -21,21 +23,54 @@ def pagination_reply_markup(page, total_pages, inline_command):
 
     return InlineKeyboardMarkup(keyboard) if keyboard[0] else None
 
-def resolve_page(page: str) -> int:
-    if (page is None) or (not page.isdigit()):
-        page = 1
+def parse_int(value: str, default: int) -> int:
+    if (value is None) or (not value.isdigit()):
+        value = default
     else:
-        page = int(page)
+        value = int(value)
 
-    return page
+    return value
 
-def format_ongoing_position(index, position):
-    lines = [f"*{index}.* [{position.title}]({position.link})", f"{position.university.name} / {position.persian_end_date()}",
-             f"➖ /{UNWATCH_COMMAND}{position.id}"]
+def fm(*text, sep='', italic=False, bold=False, strikethrough=False, link: str = None):
+    text = sep.join([str(t) for t in text])
+    text = text.replace("-", "\-").replace('.', '\.').replace('(', '\(').replace(')', '\)')
+
+    if bold:
+        text = f'*{text}*'
+
+    if italic:
+        text = f'_{text}_'
+
+    if strikethrough:
+        text = f'~{text}~'
+
+    if link:
+        link = link.replace("-", "\-")
+        text = f'[{text}]({link})'
+
+    return text
+
+def format_bot_position(user: User, index, position: Position):
+    if user.has_watched(position):
+        emoji = '🔕'
+        command = f'/{UNWATCH_COMMAND}{position.id}'
+    else:
+        emoji = '🔔'
+        command = f'/{WATCH_COMMAND}{position.id}'
+
+    lines = [f"*{fm(index, '.')}* {fm(position.title, link=position.link, strikethrough=position.is_expired())}",
+             f"{fm(position.university.name, italic=True)} @ {fm(position.persian_end_date(), italic=True)}",
+             f"{emoji} {command}"]
+    return '\n'.join(lines)
+
+def format_bot_university(user: User, index, university: University):
+    lines = [f"*{fm(index, '.')}* {fm(university.name, bold=True)} /{UNIVERSITY_POSITIONS_COMMAND}{university.id}",
+             f"{fm(university.position_count, 'Positions', sep=' ', italic=True)}"]
     return '\n'.join(lines)
 
 def format_removed_position(index, position):
-    lines = [f"*{index}.* [{position.title}]({position.link})", f"{position.university.name} / {position.persian_end_date()}",
+    lines = [f"{fm(index, '.', bold=True)} {fm(position.title, link=position.link, strikethrough=position.is_expired())}",
+             f"{fm(position.university.name)} / {fm(position.persian_end_date())}",
              f"🔛 /{RESTORE_COMMAND}{position.id}"]
     return '\n'.join(lines)
 
@@ -65,50 +100,87 @@ async def publish_position(bot: Bot, chat_id, position, silent=False):
     except:
         pass
 
-def generate_position_list(query: Query, title: str, page: int, per_page: int, total: int, paging_inline_command):
+def generate_position_list(user, query: Query, title: str, page: int, per_page: int, total: int, paging_inline_command):
     total_pages = ceil(total / per_page)
     page = min(total_pages, page)
 
     lines = [
-        f"*{title}* - {(page - 1) * per_page + 1} to {min(total, page * per_page)} from {total}"]
+        f"*{title}*", f"{(page - 1) * per_page + 1} to {min(total, page * per_page)} from {total}"]
 
     for index, position in enumerate(query.paginate(page, per_page)):
-        lines += [f"\n{format_ongoing_position(per_page * (page - 1) + index + 1, position)}"]
+        lines += [f"\n{format_bot_position(user, per_page * (page - 1) + index + 1, position)}"]
 
     text = '\n'.join(lines)
     reply_markup = pagination_reply_markup(page, total_pages, paging_inline_command)
 
     return text, reply_markup
 
-def my_ongoing_positions(user, page, per_page):
+def generate_university_list(user, query: Query, title: str, page: int, per_page: int, total: int, paging_inline_command):
+    total_pages = ceil(total / per_page)
+    page = min(total_pages, page)
+
+    lines = [
+        f"*{title}*", f"{(page - 1) * per_page + 1} to {min(total, page * per_page)} from {total}"]
+
+    for index, position in enumerate(query.paginate(page, per_page)):
+        lines += [f"\n{format_bot_university(user, per_page * (page - 1) + index + 1, position)}"]
+
+    text = '\n'.join(lines)
+    reply_markup = pagination_reply_markup(page, total_pages, paging_inline_command)
+
+    return text, reply_markup
+
+def university_positions(user, university: University, page, per_page):
+    query = university.published_positions()
+
+    if (total_num := query.count()) == 0:
+        reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(REFRESH_BTN, callback_data=COMMAND_SEP.join([UNIVERSITY_POSITIONS_INLINE, str(university.id), 1]))]])
+        text = f'No positions were found in {university.name}.'
+
+        return text, reply_markup
+    else:
+        return generate_position_list(user, query, f'Positions in {university.name}', page, per_page, total_num, COMMAND_SEP.join([UNIVERSITY_POSITIONS_INLINE, str(university.id)]))
+
+def university_list(user, page, per_page):
+    query = University.select(University, fn.COUNT(Position).alias('position_count')).join(Position).order_by(University.name.asc()).group_by(University)
+
+    if (total_num := query.count()) == 0:
+        reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(REFRESH_BTN, callback_data=UNIVERSITIES_INLINE)]])
+        text = fm('No Universities were found.')
+
+        return text, reply_markup
+    else:
+        return generate_university_list(user, query, f'List of Universities', page, per_page, total_num, UNIVERSITIES_INLINE)
+
+def my_ongoing_positions(user: User, page, per_page):
     query = user.ongoing_positions()
 
     if (total_num := query.count()) == 0:
         reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(REFRESH_BTN, callback_data=f'{MY_ONGOING_POSITIONS_INLINE}{COMMAND_SEP}1')]])
-        text = 'No ongoing position is in watchlist.'
+        text = fm('No ongoing positions are in watchlist.')
         return text, reply_markup
     else:
-        return generate_position_list(query, 'Ongoing Positions', page, per_page, total_num, MY_ONGOING_POSITIONS_INLINE)
+        return generate_position_list(user, query, ONGOING_POSITIONS_TITLE, page, per_page, total_num, MY_ONGOING_POSITIONS_INLINE)
 
-def my_expired_positions(user, page, per_page):
+def my_expired_positions(user: User, page, per_page):
     query = user.expired_positions()
 
     if (total_num := query.count()) == 0:
         reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(REFRESH_BTN, callback_data=f'{MY_EXPIRED_POSITIONS_INLINE}{COMMAND_SEP}1')]])
-        text = 'No expired position is in watchlist.'
+        text = fm('No expired positions are in watchlist.')
         return text, reply_markup
     else:
-        return generate_position_list(query, 'Expired Positions', page, per_page, total_num, MY_EXPIRED_POSITIONS_INLINE)
+        return generate_position_list(user, query, EXPIRED_POSITIONS_TITLE, page, per_page, total_num, MY_EXPIRED_POSITIONS_INLINE)
 
-def removed_positions(page, per_page):
+def removed_positions(user, page, per_page):
     query = Position.removed()
 
     if (total_num := query.count()) == 0:
         reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(REFRESH_BTN, callback_data=f'{REMOVED_POSITIONS_INLINE}{COMMAND_SEP}1')]])
-        text = 'No removed position were found.'
+        text = 'No removed positions were found.'
         return text, reply_markup
     else:
-        return generate_position_list(query, 'Removed Positions', page, per_page, total_num, REMOVED_POSITIONS_INLINE)
+        return generate_position_list(user, query, REMOVED_POSITIONS_TITLE, page, per_page, total_num, REMOVED_POSITIONS_INLINE)
 
 def upcoming_week_positions(user, page, per_page):
     query = user.upcoming_deadlines(weeks=1)
@@ -118,7 +190,7 @@ def upcoming_week_positions(user, page, per_page):
         text = EMPTY_UPCOMING_WEEK_DEADLINES
         return text, reply_markup
     else:
-        return generate_position_list(query, UPCOMING_WEEK_DEADLINES, page, per_page, total_num, UPCOMING_WEEK_DEADLINES_INLINE)
+        return generate_position_list(user, query, UPCOMING_WEEK_DEADLINES_TITLE, page, per_page, total_num, UPCOMING_WEEK_DEADLINES_INLINE)
 
 def upcoming_day_positions(user, page, per_page):
     query = user.upcoming_deadlines(days=1)
@@ -128,4 +200,4 @@ def upcoming_day_positions(user, page, per_page):
         text = EMPTY_UPCOMING_DAY_DEADLINES
         return text, reply_markup
     else:
-        return generate_position_list(query, UPCOMING_DAY_DEADLINES, page, per_page, total_num, UPCOMING_DAY_DEADLINES_INLINE)
+        return generate_position_list(user, query, UPCOMING_DAY_DEADLINES_TITLE, page, per_page, total_num, UPCOMING_DAY_DEADLINES_INLINE)

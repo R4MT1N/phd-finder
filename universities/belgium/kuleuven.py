@@ -28,4 +28,4 @@ class KULeuven(University):
             title = clean_text(job['_source']['posting']['title'])
             link = join_urls('https://www.kuleuven.be/personeel/jobsite/jobs/', job['_id'])
             end_at = read_date(job['_source']['applyBefore'], '%Y%m%d')
-            self.add_position(link, title, end_at)
+            self.save_position(link, title, end_at)

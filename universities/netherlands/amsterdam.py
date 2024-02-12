@@ -45,4 +45,4 @@ class Amsterdam(University):
                                  "%a %b %d %H:%M:%S UTC %Y")
             start_at = read_date(pos_soup.select_one('meta[itemprop=datePosted]').attrs['content'],
                                  "%a %b %d %H:%M:%S UTC %Y")
-            self.add_position(link, title, end_date, start_at)
+            self.save_position(link, title, end_date, start_at)

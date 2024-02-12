@@ -23,4 +23,4 @@ class Vrije(University):
             title = clean_text(job.select_one('div.vacancy-item-titles h3').text)
             link = job.select_one('a.vacancy-item').attrs['href']
             end_at = read_date(job.select_one('li.end-date div.date-metadata').attrs['data-utc'], '%Y-%m-%dT%H:%M:%S')
-            self.add_position(link, title, end_at)
+            self.save_position(link, title, end_at)

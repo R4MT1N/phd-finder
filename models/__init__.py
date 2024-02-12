@@ -1,3 +1,2 @@
-from .tables import Country, University, Position, Message, User, UserPosition, create_tables
+from .tables import Country, University, Position, Message, User, UserPosition, create_tables, drop_tables
 
-create_tables()

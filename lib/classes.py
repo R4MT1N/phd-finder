@@ -1,9 +1,12 @@
 from __future__ import annotations
-from typing import List
+
 from abc import ABC, abstractmethod
-from bs4 import BeautifulSoup
+from typing import List
+
 import requests
-from models import University as UniversityModel, Position as PositionModel, Country as CountryModel
+from bs4 import BeautifulSoup
+
+from models import University as MUniversity, Position as MPosition, Country as MCountry
 
 
 class Position:
@@ -15,9 +18,9 @@ class Position:
         self.start_date = start_date
 
     def save_if_new(self) -> bool:
-        model, is_created = PositionModel.get_or_create(link=self.link, end_date=self.end_date,
-                                                        university=self.university.model,
-                                                        defaults={'start_date': self.start_date, 'title': self.title})
+        model, is_created = MPosition.get_or_create(link=self.link, end_date=self.end_date,
+                                                    university=self.university.db_model,
+                                                    defaults={'start_date': self.start_date, 'title': self.title})
         return is_created
 
     def __str__(self):
@@ -34,19 +37,21 @@ class University(ABC):
     Vacancy_Link = None
 
     def __init__(self):
-        self.positions: List[Position] = []
-        self.new_positions: List[Position] = []
         self.soup_data: BeautifulSoup = self._fetch_and_render_link(self.Vacancy_Link) if self.Auto_Soup else None
         self.json_data = None
+        self.total_new_positions = 0
 
-        CountryModel.get_or_create(name=self.Country_Name)
-        self.model: UniversityModel = UniversityModel.get_or_create(name=self.Name,
-                                                                    defaults={'usn_rank': self.Rank_USN,
-                                                                              'usn_cs_rank': self.Rank_USN_CS,
-                                                                              'qsn_rank': self.Rank_QSN,
-                                                                              'country_id': self.Country_Name,
-                                                                              'vacancy_link': self.Vacancy_Link})[0]
+        MCountry.get_or_create(name=self.Country_Name)
+        self.db_model = self.create_db_record()
         self._check_source_validity()
+
+    def create_db_record(self):
+        return MUniversity.get_or_create(name=self.Name,
+                                         defaults={'usn_rank': self.Rank_USN,
+                                                   'usn_cs_rank': self.Rank_USN_CS,
+                                                   'qsn_rank': self.Rank_QSN,
+                                                   'country_id': self.Country_Name,
+                                                   'vacancy_link': self.Vacancy_Link})[0]
 
     @staticmethod
     def _fetch_and_render_link(link=None) -> BeautifulSoup:
@@ -75,10 +80,6 @@ class University(ABC):
         except AssertionError:
             raise Exception(f'Page validation failed for "{self.Name}".')
 
-    def add_position(self, link, title, expire_date=None, start_date=None):
-        pos = Position(self, link, title, expire_date, start_date)
-        self.positions.append(pos)
-        if pos.save_if_new():
-            self.new_positions.append(pos)
-        else:
-            return None
+    def save_position(self, link, title, expire_date=None, start_date=None):
+        if Position(self, link, title, expire_date, start_date).save_if_new():
+            self.total_new_positions += 1

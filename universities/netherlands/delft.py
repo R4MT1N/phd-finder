@@ -31,4 +31,4 @@ class Delft(University):
             title = clean_text(job['jobFields']['jobTitle'])
             link = job['jobFields']['applicationUrl']
             expire_at = read_timestamp(job['jobFields']['DPOSTINGEND'] // 1000)
-            self.add_position(link, title, expire_at)
+            self.save_position(link, title, expire_at)

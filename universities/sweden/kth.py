@@ -36,4 +36,4 @@ class KTH(University):
             link = job['links']['apply']
             expire_at = read_date(job['attributes']['dates']['deadline'].split('T')[0], "%Y-%m-%d")
             published_at = read_date(job['attributes']['dates']['published'].split('T')[0], "%Y-%m-%d")
-            self.add_position(link, title, expire_at, published_at)
+            self.save_position(link, title, expire_at, published_at)

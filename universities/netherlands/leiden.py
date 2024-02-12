@@ -25,4 +25,4 @@ class Leiden(University):
             pos_details = BeautifulSoup(get_request(link).content, 'html.parser')
             end_at = read_date(clean_text(pos_details.select('.facts dd')[-1].find(text=True)), '%d %B %Y')
             start_at = read_date(clean_text(pos_details.select('.facts dd')[-2].find(text=True)), '%d %B %Y')
-            self.add_position(link, title, end_at, start_at)
+            self.save_position(link, title, end_at, start_at)

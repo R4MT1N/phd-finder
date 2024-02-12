@@ -30,4 +30,4 @@ class Utrecht(University):
             title = clean_text(job.select_one('h3.list-item__title > a').text)
             link = join_urls(self.Vacancy_Link, job.select_one('h3.list-item__title > a').attrs['href'])
             expire_at = read_date(job.select('div.list-item__bottom dl.meta dd.meta__content')[1].text, '%d %B %Y')
-            self.add_position(link, title, expire_at)
+            self.save_position(link, title, expire_at)

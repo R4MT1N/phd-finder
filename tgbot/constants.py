@@ -12,6 +12,8 @@ COMMAND_SEP = '+'
 # Inline Commands
 WATCH_CHANNEL_POSITION_INLINE = 'watch_channel_position'
 REMOVE_CHANNEL_POSITION_INLINE = 'remove_channel_position'
+UNIVERSITY_POSITIONS_INLINE = 'university_positions'
+UNIVERSITIES_INLINE = 'universities'
 MY_ONGOING_POSITIONS_INLINE = 'my_ongoing_positions'
 MY_EXPIRED_POSITIONS_INLINE = 'my_expired_positions'
 REMOVED_POSITIONS_INLINE = 'removed_positions'
@@ -29,34 +31,42 @@ NVM_BTN = "I'm OK"  # NVM = Never mind
 REFRESH_BTN = '🔄 Refresh'
 NEXT_BTN = '➡️ Next'
 PREVIOUS_BTN = '⬅️ Previous'
-WATCH_BTN = "➕ Watch"
+WATCH_BTN = "🔔 Watch"
 REMOVE_BTN = "❌ Remove"
 
 # Info & Error Texts
 ONLY_REGISTERED_USER_ALLOWED = 'First, you have to be a registered user'
-POSITION_ID_INVALID = 'The position id "{}" is invalid'
-POSITION_UNWATCHED = 'Position "{}" is removed from watchlist'
 ONLY_ADMINS_ALLOWED = 'Only admins can do that'
-POSITION_ADDED_TO_LIST = 'Position is added to your list'
-POSITION_ALREADY_IN_LIST = 'Position is already in your list'
+POSITION_ID_INVALID = 'The position id "{}" is invalid'
+UNIVERSITY_ID_INVALID = 'The university id "{}" is invalid'
+POSITION_UNWATCHED = 'Position "{}" is removed from watchlist'
+POSITION_WATCHED = 'Position is added to watchlist'
+POSITION_TITLE_WATCHED = 'Position "{}" is added to watchlist'
+POSITION_ALREADY_IN_LIST = 'Position is already in watchlist'
 POSITION_REMOVED = 'Position is removed'
 POSITION_ALREADY_REMOVED = 'Position is already removed'
 POSITION_RESTORED = 'Position "{}" is restored'
-NOTHING_CHANGED = 'Nothing has changed since yet'
+NOTHING_CHANGED = 'Nothing has changed'
 EMPTY_UPCOMING_WEEK_DEADLINES = 'No deadline in the upcoming week'
 EMPTY_UPCOMING_DAY_DEADLINES = 'No deadline in the upcoming day'
 
 # Titles
-UPCOMING_WEEK_DEADLINES = 'Upcoming Week Deadlines'
-UPCOMING_DAY_DEADLINES = 'Upcoming Day Deadlines'
+UPCOMING_WEEK_DEADLINES_TITLE = 'Upcoming Week Deadlines'
+UPCOMING_DAY_DEADLINES_TITLE = 'Upcoming Day Deadlines'
+ONGOING_POSITIONS_TITLE = 'Watchlist'
+EXPIRED_POSITIONS_TITLE = 'Expired Positions'
+REMOVED_POSITIONS_TITLE = 'Removed Positions'
 
 # Bot Commands
-UNWATCH_COMMAND = 'up'
 # REMOVE_COMMAND = 'rp'
+WATCH_COMMAND = 'wp'
+UNWATCH_COMMAND = 'uwp'
 RESTORE_COMMAND = 'rsp'
-MY_ONGOING_POSITIONS_COMMAND = 'ongoing'
-MY_EXPIRED_POSITIONS_COMMAND = 'expired'
-REMOVED_POSITIONS_COMMAND = 'removed'
+UNIVERSITY_POSITIONS_COMMAND = 'unip'
+ONGOING_POSITIONS_COMMAND = 'Watchlist'
+EXPIRED_POSITIONS_COMMAND = 'Expired Positions'
+REMOVED_POSITIONS_COMMAND = 'Removed Positions'
+UNIVERSITIES_COMMAND = 'Universities'
 
 start_funny_sentences = [
     "Alright, it's time to add some positions to your list, please!",

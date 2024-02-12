@@ -28,4 +28,4 @@ class Gothenburg(University):
 
             link = row.select_one('td:nth-child(1) a').attrs['href']
             expire_at = read_date(clean_text(row.select_one('td:nth-child(4) div:nth-child(2)').text), "%Y-%m-%d")
-            self.add_position(link, title, expire_at)
+            self.save_position(link, title, expire_at)

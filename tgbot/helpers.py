@@ -135,7 +135,7 @@ def university_positions(user, university: University, page, per_page):
 
     if (total_num := query.count()) == 0:
         reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(REFRESH_BTN, callback_data=COMMAND_SEP.join([UNIVERSITY_POSITIONS_INLINE, str(university.id), 1]))]])
-        text = f'No positions were found in {university.name}.'
+        text = fm(f'No positions were found in {university.name}.')
 
         return text, reply_markup
     else:
@@ -177,7 +177,7 @@ def removed_positions(user, page, per_page):
 
     if (total_num := query.count()) == 0:
         reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(REFRESH_BTN, callback_data=f'{REMOVED_POSITIONS_INLINE}{COMMAND_SEP}1')]])
-        text = 'No removed positions were found.'
+        text = fm('No removed positions were found.')
         return text, reply_markup
     else:
         return generate_position_list(user, query, REMOVED_POSITIONS_TITLE, page, per_page, total_num, REMOVED_POSITIONS_INLINE)
@@ -187,7 +187,7 @@ def upcoming_week_positions(user, page, per_page):
 
     if (total_num := query.count()) == 0:
         reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(REFRESH_BTN, callback_data=f'{UPCOMING_WEEK_DEADLINES_INLINE}{COMMAND_SEP}1')]])
-        text = EMPTY_UPCOMING_WEEK_DEADLINES
+        text = fm(EMPTY_UPCOMING_WEEK_DEADLINES)
         return text, reply_markup
     else:
         return generate_position_list(user, query, UPCOMING_WEEK_DEADLINES_TITLE, page, per_page, total_num, UPCOMING_WEEK_DEADLINES_INLINE)
@@ -197,7 +197,7 @@ def upcoming_day_positions(user, page, per_page):
 
     if (total_num := query.count()) == 0:
         reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(REFRESH_BTN, callback_data=f'{UPCOMING_DAY_DEADLINES_INLINE}{COMMAND_SEP}1')]])
-        text = EMPTY_UPCOMING_DAY_DEADLINES
+        text = fm(EMPTY_UPCOMING_DAY_DEADLINES)
         return text, reply_markup
     else:
         return generate_position_list(user, query, UPCOMING_DAY_DEADLINES_TITLE, page, per_page, total_num, UPCOMING_DAY_DEADLINES_INLINE)

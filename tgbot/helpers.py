@@ -115,6 +115,21 @@ def generate_position_list(user, query: Query, title: str, page: int, per_page: 
 
     return text, reply_markup
 
+def generate_removed_position_list(user, query: Query, title: str, page: int, per_page: int, total: int, paging_inline_command):
+    total_pages = ceil(total / per_page)
+    page = min(total_pages, page)
+
+    lines = [
+        f"*{title}*", f"{(page - 1) * per_page + 1} to {min(total, page * per_page)} from {total}"]
+
+    for index, position in enumerate(query.paginate(page, per_page)):
+        lines += [f"\n{format_removed_position(user, per_page * (page - 1) + index + 1, position)}"]
+
+    text = '\n'.join(lines)
+    reply_markup = pagination_reply_markup(page, total_pages, paging_inline_command)
+
+    return text, reply_markup
+
 def generate_university_list(user, query: Query, title: str, page: int, per_page: int, total: int, paging_inline_command):
     total_pages = ceil(total / per_page)
     page = min(total_pages, page)
@@ -180,7 +195,7 @@ def removed_positions(user, page, per_page):
         text = fm('No removed positions were found.')
         return text, reply_markup
     else:
-        return generate_position_list(user, query, REMOVED_POSITIONS_TITLE, page, per_page, total_num, REMOVED_POSITIONS_INLINE)
+        return generate_removed_position_list(user, query, REMOVED_POSITIONS_TITLE, page, per_page, total_num, REMOVED_POSITIONS_INLINE)
 
 def upcoming_week_positions(user, page, per_page):
     query = user.upcoming_deadlines(weeks=1)

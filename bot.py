@@ -48,15 +48,15 @@ async def remove_channel_position_inline_handler(update: Update, context: Contex
     position_id = query.data.split(COMMAND_SEP)[1]
 
     if (user := User.get_or_none(id=query.from_user.id, is_admin=True)) is None:
-        await query.answer(ONLY_ADMINS_ALLOWED, show_alert=True)
+        await query.answer(ONLY_ADMINS_ALLOWED)
         return
 
     if (position := Position.get_or_none(id=position_id)) is None:
-        await query.answer(POSITION_ID_INVALID.format(position_id), show_alert=True)
+        await query.answer(POSITION_ID_INVALID.format(position_id))
         return
 
     position.remove()
-    await query.answer(POSITION_REMOVED, show_alert=True)
+    await query.answer(POSITION_REMOVED)
     await query.message.delete()
 
 async def watch_channel_position_inline_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -64,19 +64,19 @@ async def watch_channel_position_inline_handler(update: Update, context: Context
     position_id = query.data.split(COMMAND_SEP)[1]
 
     if (user := User.get_or_none(id=query.from_user.id)) is None:
-        await query.answer(ONLY_REGISTERED_USER_ALLOWED, show_alert=True)
+        await query.answer(ONLY_REGISTERED_USER_ALLOWED)
         return
 
     if (position := Position.get_or_none(id=position_id)) is None:
-        await query.answer(POSITION_ID_INVALID.format(position_id), show_alert=True)
+        await query.answer(POSITION_ID_INVALID.format(position_id))
         return
 
     if UserPosition.select().where((UserPosition.position == position) & (UserPosition.user == user)).exists():
-        await query.answer(POSITION_ALREADY_IN_LIST, show_alert=True)
+        await query.answer(POSITION_ALREADY_IN_LIST)
         return
 
     user.positions.add(position)
-    await query.answer(POSITION_WATCHED, show_alert=True)
+    await query.answer(POSITION_WATCHED)
 
 async def cancel_inline_handler(update: Update, context: CallbackContext):
     query = update.callback_query
@@ -116,7 +116,7 @@ async def watch_position_command_handler(update: Update, context: CallbackContex
         return
 
     if UserPosition.select().where((UserPosition.position == position) & (UserPosition.user == user)).exists():
-        await update.message.reply_text(POSITION_ALREADY_IN_LIST, show_alert=True)
+        await update.message.reply_text(POSITION_ALREADY_IN_LIST)
         return
 
     user.positions.add(position)
@@ -285,14 +285,14 @@ async def undo_unwatch_position_inline_handler(update: Update, context: Callback
         return
 
     if (position := Position.get_or_none(id=position_id)) is None:
-        await query.answer(POSITION_ID_INVALID.format(position_id), show_alert=True)
+        await query.answer(POSITION_ID_INVALID.format(position_id))
         return
 
     if UserPosition.select().where((UserPosition.position == position) & (UserPosition.user == user)).exists():
-        await query.answer(POSITION_ALREADY_IN_LIST, show_alert=True)
+        await query.answer(POSITION_ALREADY_IN_LIST)
     else:
         user.positions.add(position)
-        await query.answer(POSITION_WATCHED, show_alert=True)
+        await query.answer(POSITION_WATCHED)
 
     await remove_message(query, user)
 
@@ -305,14 +305,14 @@ async def undo_restore_position_inline_handler(update: Update, context: Callback
         return
 
     if (position := Position.get_or_none(id=position_id)) is None:
-        await query.answer(POSITION_ID_INVALID.format(position_id), show_alert=True)
+        await query.answer(POSITION_ID_INVALID.format(position_id))
         return
 
     if position.removed_at is not None:
-        await query.answer(POSITION_ALREADY_REMOVED, show_alert=True)
+        await query.answer(POSITION_ALREADY_REMOVED)
     else:
         position.remove()
-        await query.answer(POSITION_REMOVED, show_alert=True)
+        await query.answer(POSITION_REMOVED)
 
     await remove_message(query, user)
 

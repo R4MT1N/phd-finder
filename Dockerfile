@@ -3,16 +3,17 @@ LABEL maintainer="Ramtin Bagheri <bagheri.ramtin@gmail.com>"
 
 WORKDIR /app
 
-COPY requirements.txt requirements.txt
-
 ENV BUILD_DEPS="build-essential" \
     APP_DEPS="curl libpq-dev"
 
 RUN echo "Acquire::Check-Valid-Until \"false\";\nAcquire::Check-Date \"false\";" | cat > /etc/apt/apt.conf.d/10no--check-valid-until
 RUN apt-get update \
-  && apt-get install -y ${BUILD_DEPS} ${APP_DEPS} cron --no-install-recommends \
-  && pip install -r requirements.txt \
-  && rm -rf /var/lib/apt/lists/* \
+  && apt-get install -y ${BUILD_DEPS} ${APP_DEPS} cron --no-install-recommends
+
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+
+RUN rm -rf /var/lib/apt/lists/* \
   && rm -rf /usr/share/doc && rm -rf /usr/share/man \
   && apt-get purge -y --auto-remove ${BUILD_DEPS} \
   && apt-get clean

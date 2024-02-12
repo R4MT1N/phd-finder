@@ -1,11 +1,16 @@
-from datetime import datetime
-
-from peewee import Query, fn
+from datetime import datetime, timedelta
+import humanize
+from peewee import Query, fn, Case
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from telegram.constants import ParseMode
 from tgbot.constants import *
 from math import ceil
 from models import Position, Message, User, University
+import logging
+
+#logging.basicConfig()
+logger = logging.getLogger('peewee')
+logger.setLevel(logging.DEBUG)
 
 
 def pagination_reply_markup(page, total_pages, inline_command):
@@ -31,7 +36,7 @@ def parse_int(value: str, default: int) -> int:
 
     return value
 
-def fm(*text, sep='', italic=False, bold=False, strikethrough=False, link: str = None):
+def fm(*text, sep=' ', italic=False, bold=False, strikethrough=False, link: str = None):
     text = sep.join([str(t) for t in text])
     text = text.replace("-", "\-").replace('.', '\.').replace('(', '\(').replace(')', '\)')
 
@@ -64,23 +69,36 @@ def format_bot_position(user: User, index, position: Position):
     return '\n'.join(lines)
 
 def format_bot_university(user: User, index, university: University):
-    lines = [f"*{fm(index, '.')}* {fm(university.name, bold=True)} /{UNIVERSITY_POSITIONS_COMMAND}{university.id}",
-             f"{fm(university.position_count, 'Positions', sep=' ', italic=True)}"]
+    lines = [f"*{fm(index, '.', sep='')}* {fm(university.name, bold=True)}",
+             f"{fm(university.position_count, 'positions', italic=True)}"]
+
+    if (watched_positions := user.watched_positions(university).count()) > 0:
+        lines[-1] += " " + fm(f"({watched_positions} watched)", italic=True)
+
+    lines[-1] += " " + fm(f'/{UNIVERSITY_POSITIONS_COMMAND}{university.id}')
+
+    t_delta = datetime.now() - university.next_check_at
+
+    if t_delta.total_seconds() < 0:
+        lines.append(fm(f"Next update in {humanize.naturaltime(t_delta)}", italic=True))
+    else:
+        lines.append(fm(f"Updated {humanize.naturaltime(t_delta)}", italic=True))
+
     return '\n'.join(lines)
 
-def format_removed_position(index, position):
-    lines = [f"{fm(index, '.', bold=True)} {fm(position.title, link=position.link, strikethrough=position.is_expired())}",
-             f"{fm(position.university.name)} / {fm(position.persian_end_date())}",
-             f"🔛 /{RESTORE_COMMAND}{position.id}"]
+def format_removed_position(index, position: Position):
+    lines = [f"{fm(index, '.', sep='', bold=True)} {fm(position.title, link=position.link, strikethrough=position.is_expired())}",
+             f"{fm(position.university.name, italic=True)} / {fm(position.persian_end_date(), italic=True)}",
+             f"⤴️ /{RESTORE_COMMAND}{position.id}"]
     return '\n'.join(lines)
 
-def format_channel_position(position):
+def format_channel_position(position: Position):
     lines = [f"🎓 *Title*: {position.title}", f"🔗 [Details]({position.link})",
              f"🏫 *Employer*: {position.university.name} ({position.university.country})",
              f"⏰ *Deadline*: {position.persian_end_date()}"]
     return '\n'.join(lines)
 
-async def remove_message(query: CallbackQuery, user):
+async def remove_message(query: CallbackQuery, user: User):
     await query.message.delete()
     Message.remove(user, query.message.id)
 
@@ -100,7 +118,7 @@ async def publish_position(bot: Bot, chat_id, position, silent=False):
     except:
         pass
 
-def generate_position_list(user, query: Query, title: str, page: int, per_page: int, total: int, paging_inline_command):
+def generate_position_list(user: User, query: Query, title: str, page: int, per_page: int, total: int, paging_inline_command):
     total_pages = ceil(total / per_page)
     page = min(total_pages, page)
 
@@ -115,7 +133,7 @@ def generate_position_list(user, query: Query, title: str, page: int, per_page: 
 
     return text, reply_markup
 
-def generate_removed_position_list(user, query: Query, title: str, page: int, per_page: int, total: int, paging_inline_command):
+def generate_removed_position_list(user: User, query: Query, title: str, page: int, per_page: int, total: int, paging_inline_command):
     total_pages = ceil(total / per_page)
     page = min(total_pages, page)
 
@@ -130,7 +148,7 @@ def generate_removed_position_list(user, query: Query, title: str, page: int, pe
 
     return text, reply_markup
 
-def generate_university_list(user, query: Query, title: str, page: int, per_page: int, total: int, paging_inline_command):
+def generate_university_list(user: User, query: Query, title: str, page: int, per_page: int, total: int, paging_inline_command):
     total_pages = ceil(total / per_page)
     page = min(total_pages, page)
 
@@ -145,7 +163,7 @@ def generate_university_list(user, query: Query, title: str, page: int, per_page
 
     return text, reply_markup
 
-def university_positions(user, university: University, page, per_page):
+def university_positions(user: User, university: University, page, per_page):
     query = university.published_positions()
 
     if (total_num := query.count()) == 0:
@@ -156,8 +174,11 @@ def university_positions(user, university: University, page, per_page):
     else:
         return generate_position_list(user, query, f'Positions in {university.name}', page, per_page, total_num, COMMAND_SEP.join([UNIVERSITY_POSITIONS_INLINE, str(university.id)]))
 
-def university_list(user, page, per_page):
-    query = University.select(University, fn.COUNT(Position).alias('position_count')).join(Position).order_by(University.name.asc()).group_by(University)
+def university_list(user: User, page, per_page):
+    query = University.select(University, fn.COUNT(Position).filter((Position.end_date > datetime.now()) & (Position.removed_at.is_null(True))).alias('position_count'))\
+        .left_outer_join(Position)\
+        .order_by(University.next_check_at.asc())\
+        .group_by(University)
 
     if (total_num := query.count()) == 0:
         reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(REFRESH_BTN, callback_data=UNIVERSITIES_INLINE)]])

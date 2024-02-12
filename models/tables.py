@@ -74,6 +74,9 @@ class User(BaseModel):
     def expired_positions(self) -> Query:
         return Position.select().join(UserPosition).join(User).where((User.id == self.id) & (Position.removed_at.is_null(True)) & (Position.end_date < datetime.now())).order_by(Position.end_date.asc())
 
+    def watched_positions(self, university: University) -> Query:
+        return User.select().join(UserPosition).join(Position).where((User.id == self.id) & (Position.university == university))
+
     def upcoming_deadlines(self, days=1, weeks=0, months=0) -> Query:
         rel_delta = relativedelta(days=days, weeks=weeks, months=months)
 

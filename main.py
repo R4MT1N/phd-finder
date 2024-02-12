@@ -2,9 +2,12 @@ import argparse
 import asyncio
 from typing import List, Type
 
+from telegram import Bot
+
 from lib import University
 from models import University as MUniversity
 from models.tables import User, create_tables, drop_tables
+from tgbot import TG_BOT_TOKEN
 from universities import *
 from scheduler import *
 from datetime import datetime, timedelta
@@ -18,35 +21,43 @@ university_classes: List[Type[University]] = [KULeuven, Maastricht, Radboud, Twe
                                               Stockholm, Chalmers]
 
 def seed_db():
-    class_mapper = {}
     for university_class in university_classes:
-        class_mapper[university_class.Name] = university_class
         university_class().create_db_record()
 
-    return class_mapper
+    User.create(id=89910849, is_admin=True)
 
 def initialize_db():
     create_tables()
     seed_db()
     print("Initialization is successfully done.")
 
-def find_new_positions(full_mode=False):
-    class_mapper = seed_db()
+async def find_new_positions(full_mode=False):
+    class_mapper = {}
+    for university_class in university_classes:
+        class_mapper[university_class.Name] = university_class
+
     new_positions = 0
 
+    bot = Bot(TG_BOT_TOKEN)
+    await bot.initialize()
+    admin: User = User.select().order_by(User.created_at.asc()).get()
+
     for university in MUniversity.select():
-        if full_mode or (university.next_check_at is None or university.next_check_at > datetime.now()):
-            university_instance = class_mapper[university.name]()
-            university_instance.fetch_positions()
-            university.next_check_at = datetime.now() + timedelta(hours=randint(3, 6), minutes=randint(0, 5) * 10)
-            university.save()
-            new_positions += university_instance.total_new_positions
+        try:
+            if full_mode or (university.next_check_at is None or university.next_check_at <= datetime.now()):
+                university_instance = class_mapper[university.name]()
+                university_instance.fetch_positions()
+                university.next_check_at = datetime.now() + timedelta(hours=randint(3, 6), minutes=randint(0, 5) * 10)
+                university.save()
+                new_positions += university_instance.total_new_positions
+        except:
+            await bot.send_message(admin.chat_id, f"A problem occurred with '{university.Name}' during the position collecting.")
 
     print(f"{new_positions} new positions were found and added to database.")
 
-def setup():
+async def setup():
     initialize_db()
-    find_new_positions(True)
+    await find_new_positions(True)
 
 
 load_dotenv(Path(__file__).parent.joinpath('.env'), override=True)
@@ -82,12 +93,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.command == 'setup':
-        setup()
+        asyncio.get_event_loop().run_until_complete(setup())
 
     elif args.command == 'reset-factory':
         drop_tables()
         print('Tables dropped.')
-        setup()
+        asyncio.get_event_loop().run_until_complete(setup())
 
     elif args.command == 'register-user':
         user, is_created = User.get_or_create(id=args.user_id)
@@ -117,7 +128,7 @@ if __name__ == '__main__':
             print(f"User '{args.user_id}' does not exists.")
 
     elif args.command == 'check':
-        find_new_positions(args.type == 'full')
+        asyncio.get_event_loop().run_until_complete(find_new_positions(args.type == 'full'))
 
     elif args.command == 'notify':
         asyncio.get_event_loop().run_until_complete(notify_new_positions())

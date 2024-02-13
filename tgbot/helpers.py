@@ -6,11 +6,6 @@ from telegram.constants import ParseMode
 from tgbot.constants import *
 from math import ceil
 from models import Position, Message, User, University
-import logging
-
-#logging.basicConfig()
-logger = logging.getLogger('peewee')
-logger.setLevel(logging.DEBUG)
 
 
 def pagination_reply_markup(page, total_pages, inline_command):
@@ -68,16 +63,16 @@ def format_bot_position(user: User, index, position: Position):
              f"{emoji} {command}"]
     return '\n'.join(lines)
 
-def format_bot_university(user: User, index, university: University):
+def format_bot_university(index, university: University):
     lines = [f"*{fm(index, '.', sep='')}* {fm(university.name, bold=True)} {f'/{UNIVERSITY_POSITIONS_COMMAND}{university.id}'}",
-             f"{fm(f'Ongoing: {university.position_count}', italic=True)}"]
+             f"{fm(f'☑️ {university.ongoing_position_count} 🔇 {university.removed_position_count}', italic=True)}"]
 
     t_delta = datetime.now() - university.next_check_at
 
     if t_delta.total_seconds() < 0:
-        lines.append(fm(f"🔄 {humanize.naturaltime(t_delta)}", italic=True))
+        lines[-1] += " " + fm(f"🔄 in {humanize.naturaltime(t_delta).replace(' from now', '')}", italic=True)
     else:
-        lines.append(fm(f"🔄 {humanize.naturaltime(t_delta)}", italic=True))
+        lines[-1] += " " + fm(f"⚠️ {humanize.naturaltime(t_delta)}", italic=True)
 
     return '\n'.join(lines)
 
@@ -143,7 +138,7 @@ def generate_removed_position_list(user: User, query: Query, title: str, page: i
 
     return text, reply_markup
 
-def generate_university_list(user: User, query: Query, title: str, page: int, per_page: int, total: int, paging_inline_command):
+def generate_university_list(query: Query, title: str, page: int, per_page: int, total: int, paging_inline_command):
     total_pages = ceil(total / per_page)
     page = min(total_pages, page)
 
@@ -151,7 +146,7 @@ def generate_university_list(user: User, query: Query, title: str, page: int, pe
         f"*{title}*", f"{(page - 1) * per_page + 1} to {min(total, page * per_page)} from {total}"]
 
     for index, position in enumerate(query.paginate(page, per_page)):
-        lines += [f"\n{format_bot_university(user, per_page * (page - 1) + index + 1, position)}"]
+        lines += [f"\n{format_bot_university(per_page * (page - 1) + index + 1, position)}"]
 
     text = '\n'.join(lines)
     reply_markup = pagination_reply_markup(page, total_pages, paging_inline_command)
@@ -169,8 +164,8 @@ def university_positions(user: User, university: University, page, per_page):
     else:
         return generate_position_list(user, query, f'Positions in {university.name}', page, per_page, total_num, COMMAND_SEP.join([UNIVERSITY_POSITIONS_INLINE, str(university.id)]))
 
-def university_list(user: User, page, per_page):
-    query = University.select(University, fn.COUNT(Position).filter((Position.end_date > datetime.now()) & (Position.removed_at.is_null(True))).alias('position_count'))\
+def university_list(page, per_page):
+    query = University.select(University, fn.COUNT(Position).filter((Position.end_date > datetime.now()) & (Position.removed_at.is_null(True))).alias('ongoing_position_count'), fn.COUNT(Position).filter(Position.removed_at.is_null(None)).alias('removed_position_count'))\
         .left_outer_join(Position)\
         .order_by(University.next_check_at.asc())\
         .group_by(University)
@@ -181,7 +176,7 @@ def university_list(user: User, page, per_page):
 
         return text, reply_markup
     else:
-        return generate_university_list(user, query, f'Universities', page, per_page, total_num, UNIVERSITIES_INLINE)
+        return generate_university_list(query, f'Universities', page, per_page, total_num, UNIVERSITIES_INLINE)
 
 def my_ongoing_positions(user: User, page, per_page):
     query = user.ongoing_positions()

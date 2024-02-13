@@ -6,6 +6,7 @@ load_dotenv(Path(__file__).parent.parent.joinpath('.env'), override=True)
 
 CHANNEL_CHAT_ID = os.getenv('TG_CHANNEL_ID')
 TG_BOT_TOKEN = os.getenv('TG_BOT_TOKEN')
+ADMIN_TG_ID = os.getenv('ADMIN_TG_ID')
 
 COMMAND_SEP = '+'
 
@@ -32,7 +33,7 @@ REFRESH_BTN = '🔄 Refresh'
 NEXT_BTN = '➡️ Next'
 PREVIOUS_BTN = '⬅️ Previous'
 WATCH_BTN = "🔔 Watch"
-REMOVE_BTN = "❌ Remove"
+REMOVE_BTN = "🔇 Hide"
 
 # Info & Error Texts
 ONLY_REGISTERED_USER_ALLOWED = 'First, you have to be a registered user'

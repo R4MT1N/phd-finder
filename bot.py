@@ -15,24 +15,6 @@ logging.basicConfig()
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-# async def notify_future_positions(title="Day", days=1, weeks=0, months=0):
-#     rel_delta = relativedelta(days=days, weeks=weeks, months=months)
-#     num_positions = Position.near_deadlines(rel_delta, count=True)
-#
-#     if not num_positions:
-#         return
-#
-#     total_pages = ceil(num_positions / Position.PER_PAGE)
-#
-#     for page in range(1, total_pages + 1):
-#         lines = [f"⭐️ *{title} Deadlines{f' {page}/{total_pages}' if total_pages > 1 else ''}* ⭐️"]
-#
-#         for position in Position.near_deadlines(rel_delta, page=page):
-#             lines += [f"\n{markdown_compact_position(tgbot.username, chat_id, position)}"]
-#
-#         await tgbot.send_message(chat_id, '\n'.join(lines), ParseMode.MARKDOWN, disable_web_page_preview=True)
-#         time.sleep(1)
-
 def generate_keyboard_buttons(is_admin: bool):
     buttons = [[ONGOING_POSITIONS_COMMAND, EXPIRED_POSITIONS_COMMAND]]
 
@@ -53,10 +35,10 @@ async def remove_channel_position_inline_handler(update: Update, context: Contex
 
     if (position := Position.get_or_none(id=position_id)) is None:
         await query.answer(POSITION_ID_INVALID.format(position_id))
-        return
+    else:
+        position.remove()
+        await query.answer(POSITION_REMOVED)
 
-    position.remove()
-    await query.answer(POSITION_REMOVED)
     await query.message.delete()
 
 async def watch_channel_position_inline_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -233,7 +215,7 @@ async def universities_intro_command_handler(update: Update, context: ContextTyp
         await update.message.reply_text(ONLY_REGISTERED_USER_ALLOWED)
         return
 
-    text, reply_markup = university_list(user, page, UNIVERSITY_PER_PAGE)
+    text, reply_markup = university_list(page, UNIVERSITY_PER_PAGE)
 
     await update.message.reply_text(text, ParseMode.MARKDOWN_V2, reply_markup=reply_markup, disable_web_page_preview=True, quote=True)
 
@@ -268,7 +250,7 @@ async def universities_inline_handler(update: Update, context: ContextTypes.DEFA
         await update.message.reply_text(ONLY_REGISTERED_USER_ALLOWED)
         return
 
-    text, reply_markup = university_list(user, page, UNIVERSITY_PER_PAGE)
+    text, reply_markup = university_list(page, UNIVERSITY_PER_PAGE)
 
     try:
         await query.edit_message_text(text, ParseMode.MARKDOWN_V2, reply_markup=reply_markup, disable_web_page_preview=True)

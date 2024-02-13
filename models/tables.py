@@ -8,6 +8,8 @@ from peewee import *
 import os
 from dotenv import load_dotenv
 from pathlib import Path
+from lib import past_time
+
 
 load_dotenv(Path(__file__).parent.parent.joinpath('.env'), override=True)
 
@@ -47,7 +49,7 @@ class University(BaseModel):
         db_table = 'universities'
 
     def published_positions(self) -> Query:
-        return self.positions.where((Position.end_date > datetime.now() - relativedelta(days=7)) & (Position.removed_at.is_null(True))).order_by(Position.end_date.asc())
+        return self.positions.where((Position.end_date > past_time(days=5)) & (Position.removed_at.is_null(True))).order_by(Position.end_date.asc())
 
     @staticmethod
     def search(query, limit=5):
@@ -93,8 +95,6 @@ class User(BaseModel):
 
 
 class Position(BaseModel):
-    PER_PAGE = 5
-
     id = AutoField()
     university: University = ForeignKeyField(University, backref='positions', on_delete='Cascade', on_update='Cascade')
     title = CharField(max_length=250)
@@ -189,7 +189,9 @@ Position._meta.add_field('users', User.positions)
 def create_tables():
     with db:
         db.create_tables([Country, University, Position, User, UserPosition, Message])
+        print('Tables are created successfully.')
 
 def drop_tables():
     with db:
         db.drop_tables([Message, UserPosition, User, Position, University, Country])
+        print('Tables are dropped successfully.')

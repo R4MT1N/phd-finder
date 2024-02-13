@@ -1,4 +1,4 @@
-from tgbot import constants
+# from tgbot import constants
 import argparse
 import asyncio
 from typing import List, Type
@@ -11,6 +11,10 @@ from universities import *
 from scheduler import *
 from datetime import datetime, timedelta
 from random import randint
+from dotenv import load_dotenv
+from pathlib import Path
+
+load_dotenv(Path(__file__).parent.parent.joinpath('.env'), override=True)
 
 
 university_classes: List[Type[University]] = [KULeuven, Maastricht, Radboud, Twente, Vrije, Erasmus, Groningen, Leiden, Eindhoven,

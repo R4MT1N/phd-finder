@@ -39,4 +39,4 @@ Through the shell, execute the `setup` command which creates db tables, insert u
 ```
 python main.py setup
 ```
-And it is done!
+And it is done! Feel free to make any suggestions; it is a 5-day project which can definitly benefit from more features :)

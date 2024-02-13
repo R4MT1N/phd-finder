@@ -1,7 +1,8 @@
 from lib import *
+from models import CUniversity
 
 
-class Lulea(University):
+class Lulea(CUniversity):
     Name = 'Lulea University of Technology'
     Vacancy_Link = 'https://www.ltu.se/appresource/4.49015fe118adb9b38ad1b0e4/12.49015fe118adb9b38ad1b05b/jobs'
     Country_Name = 'Sweden'

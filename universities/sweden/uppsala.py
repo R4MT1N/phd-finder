@@ -1,6 +1,8 @@
 from lib import *
+from models import CUniversity
 
-class Uppsala(University):
+
+class Uppsala(CUniversity):
     Name = 'Uppsala University'
     Vacancy_Link = 'https://www.jobb.uu.se/?languageId=1&locationFilter=&positionType=doktorand&sortValue=published'
     Country_Name = 'Sweden'

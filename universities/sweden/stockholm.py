@@ -1,6 +1,8 @@
 from lib import *
+from models import CUniversity
 
-class Stockholm(University):
+
+class Stockholm(CUniversity):
     Name = 'Stockholm University'
     Vacancy_Link = 'https://web103.reachmee.com/ext/I007/927/main?site=13&validator=da57c1f2e2ddea2946680e7e5adb241d&lang=UK&ref='
     Country_Name = 'Sweden'

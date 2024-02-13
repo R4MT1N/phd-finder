@@ -1,7 +1,8 @@
 from lib import *
+from models import CUniversity
 
 
-class Maastricht(University):
+class Maastricht(CUniversity):
     Name = 'Maastricht University'
     Vacancy_Link = "https://vacancies.maastrichtuniversity.nl/search/?createNewAlert=false&q=&optionsFacetsDD_facility=Faculty+of+Science+%26+Engineering&optionsFacetsDD_dept=Academic&optionsFacetsDD_city=&optionsFacetsDD_customfield1=&optionsFacetsDD_customfield2="
     Country_Name = 'Netherlands'

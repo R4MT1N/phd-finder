@@ -1,6 +1,8 @@
 from lib import *
+from models import CUniversity
 
-class Lund(University):
+
+class Lund(CUniversity):
     Name = 'Lund University'
     Vacancy_Link = 'https://www.lunduniversity.lu.se/vacancies'
     Country_Name = 'Sweden'

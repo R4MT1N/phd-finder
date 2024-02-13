@@ -1,7 +1,8 @@
 from lib import *
+from models import CUniversity
 
 
-class Chalmers(University):
+class Chalmers(CUniversity):
     Name = 'Chalmers University of Technology'
     Vacancy_Link = 'https://web103.reachmee.com/ext/I003/304/main?site=5&validator=a72aeedd63ec10de71e46f8d91d0d57c&lang=UK&ref='
     Country_Name = 'Sweden'

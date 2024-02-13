@@ -1,7 +1,8 @@
 from lib import *
+from models import CUniversity
 
 
-class Vrije(University):
+class Vrije(CUniversity):
     Name = 'Vrije Universiteit Amsterdam'
     Vacancy_Link = "https://workingat.vu.nl/vacancies?o=0&n=10&of=18&f=653&of=35&f=36&of=38&f=42#vacancy-overview"
     Country_Name = 'Netherlands'

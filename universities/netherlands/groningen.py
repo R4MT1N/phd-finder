@@ -1,7 +1,8 @@
 from lib import *
+from models import CUniversity
 
 
-class Groningen(University):
+class Groningen(CUniversity):
     Name = 'University of Groningen'
     Vacancy_Link = 'https://www.rug.nl/about-ug/work-with-us/job-opportunities/?cat=phd&&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp'
     Country_Name = 'Netherlands'

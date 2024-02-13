@@ -1,25 +1,25 @@
-# from tgbot import constants
+from tgbot import constants
 import argparse
 import asyncio
+from tgbot import constants
 from typing import List, Type
 from telegram import Bot
-from lib import University
-from models import University as MUniversity
+from models import University as MUniversity, CUniversity
 from models.tables import User, create_tables, drop_tables
 from tgbot import TG_BOT_TOKEN
 from universities import *
 from scheduler import *
 from datetime import datetime, timedelta
 from random import randint
-from dotenv import load_dotenv
-from pathlib import Path
+# from dotenv import load_dotenv
+# from pathlib import Path
+#
+# load_dotenv(Path(__file__).parent.parent.joinpath('.env'), override=True)
 
-load_dotenv(Path(__file__).parent.parent.joinpath('.env'), override=True)
+university_classes: List[Type[CUniversity]] = [KULeuven, Maastricht, Radboud, Twente, Vrije, Erasmus, Groningen, Leiden,
+                                               Eindhoven, Utrecht, Amsterdam, Delft, Umea, Lulea, Linkoping, Gothenburg, Lund, KTH,
+                                               Uppsala, Stockholm, Chalmers]
 
-
-university_classes: List[Type[University]] = [KULeuven, Maastricht, Radboud, Twente, Vrije, Erasmus, Groningen, Leiden, Eindhoven,
-                                              Utrecht, Amsterdam, Delft, Umea, Lulea, Linkoping, Gothenburg, Lund, KTH, Uppsala,
-                                              Stockholm, Chalmers]
 
 def seed_db():
     for university_class in university_classes:
@@ -29,9 +29,11 @@ def seed_db():
 
     print("Database is seeded successfully.")
 
+
 def initialize_db():
     create_tables()
     seed_db()
+
 
 async def find_new_positions(full_mode=False):
     class_mapper = {}
@@ -61,9 +63,11 @@ async def find_new_positions(full_mode=False):
 
     print(f"{new_positions} new positions were found and added to database.")
 
+
 async def setup():
     initialize_db()
     await find_new_positions(True)
+
 
 def register_user(user_id, is_admin=False):
     user, is_created = User.get_or_create(id=user_id)
@@ -74,6 +78,7 @@ def register_user(user_id, is_admin=False):
         return f"User '{user.id}' is updated as {'admin' if is_admin else 'normal user'}"
     else:
         return f"User '{user.id}' is registered as {'admin' if is_admin else 'normal user'}"
+
 
 def remove_user(user_id):
     if user := User.get_or_none(id=user_id):

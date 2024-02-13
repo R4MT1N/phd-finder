@@ -1,6 +1,7 @@
 from lib import *
+from models import CUniversity
 
-class Linkoping(University):
+class Linkoping(CUniversity):
     Name = 'Linkoping University'
     Vacancy_Link = 'https://liu.se/en/work-at-liu/vacancies'
     Country_Name = 'Sweden'

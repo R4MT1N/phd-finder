@@ -1,7 +1,8 @@
 from lib import *
+from models import CUniversity
 
 
-class Delft(University):
+class Delft(CUniversity):
     Name = 'Delft University of Technology'
     Vacancy_Link = 'https://emea3.recruitmentplatform.com/fo/rest/jobs?firstResult=0&maxResults=100&sortBy=DPOSTINGEND&sortOrder=desc'
     Country_Name = 'Netherlands'

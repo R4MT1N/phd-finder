@@ -1,7 +1,8 @@
 from lib import *
+from models import CUniversity
 
 
-class Radboud(University):
+class Radboud(CUniversity):
     Name = 'Radboud University'
     Vacancy_Link = "https://www.ru.nl/en/working-at/job-opportunities/job-opportunities/Scientific/job-type/Promotieplaatsen/provider/828"
     Country_Name = 'Netherlands'

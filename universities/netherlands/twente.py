@@ -1,7 +1,8 @@
 from lib import *
+from models import CUniversity
 
 
-class Twente(University):
+class Twente(CUniversity):
     Name = 'University of Twente'
     Vacancy_Link = "https://utwentecareers.nl/en/vacancies/?type=WP&category=PR&page=1&faculty=EEMCS"
     Country_Name = 'Netherlands'

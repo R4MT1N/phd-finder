@@ -1,8 +1,8 @@
-from typing import List
 from lib import *
+from models import CUniversity
 
 
-class Utrecht(University):
+class Utrecht(CUniversity):
     Name = 'Utrecht University'
     Vacancy_Link = 'https://www.uu.nl/en/organisation/working-at-utrecht-university/jobs'
     Country_Name = 'Netherlands'

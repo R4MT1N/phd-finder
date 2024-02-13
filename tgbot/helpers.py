@@ -1,6 +1,6 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import humanize
-from peewee import Query, fn, Case
+from peewee import Query, fn
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from telegram.constants import ParseMode
 from tgbot.constants import *

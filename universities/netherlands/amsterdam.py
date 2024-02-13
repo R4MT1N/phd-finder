@@ -1,4 +1,5 @@
 from lib import *
+from models import University
 
 
 class Amsterdam(University):

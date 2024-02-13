@@ -1,7 +1,8 @@
 from lib import *
+from models import CUniversity
 
 
-class Erasmus(University):
+class Erasmus(CUniversity):
     Name = 'Erasmus University Rotterdam'
     Vacancy_Link = "https://www.eur.nl/en/vacancies/overview?f[0]=organisation%3A3179&f[1]=type%3A2955"
     Country_Name = 'Netherlands'

@@ -1,7 +1,8 @@
 from lib import *
+from models import CUniversity
 
 
-class Eindhoven(University):
+class Eindhoven(CUniversity):
     Name = 'Eindhoven University of Technology'
     Auto_Soup = False
     Vacancy_Link = 'https://jobs.tue.nl/en/vacancies.html'

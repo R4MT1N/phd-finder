@@ -1,6 +1,8 @@
 from lib import *
+from models import CUniversity
 
-class Umea(University):
+
+class Umea(CUniversity):
     Name = 'Umea University'
     Vacancy_Link = 'https://www.umu.se/en/work-with-us/open-positions/listajobb?JobbSidId=3770980&JobbBlockId=3771058&pk=1&org=8304&X-Requested-With=XMLHttpRequest'
     Country_Name = 'Sweden'

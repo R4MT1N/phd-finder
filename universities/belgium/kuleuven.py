@@ -1,8 +1,8 @@
-from typing import List
 from lib import *
+from models import CUniversity
 
 
-class KULeuven(University):
+class KULeuven(CUniversity):
     Name = 'KU Leuven'
     Auto_Soup = False
     Vacancy_Link = 'https://icts-p-fii-toep-component-filter2.cloud.icts.kuleuven.be/api/projects/Jobsite_phd/search?112=%5B%22Research%20Areas%20Science,%20Engineering%20and%20Technology%22%5D&115=%5B%22Full-time%22%5D&136=%5B%22Computer%20Science%22%5D&lang=en&page=0'

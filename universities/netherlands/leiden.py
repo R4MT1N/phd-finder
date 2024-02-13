@@ -1,7 +1,8 @@
 from lib import *
+from models import CUniversity
 
 
-class Leiden(University):
+class Leiden(CUniversity):
     Name = 'Leiden University'
     Vacancy_Link = 'https://www.universiteitleiden.nl/en/vacancies?pageNumber=1&functioncategory=phd-function&faculty=science&facultyinstitute=leiden-institute-of-advanced-computer-science'
     Country_Name = 'Netherlands'

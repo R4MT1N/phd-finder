@@ -1,8 +1,9 @@
 import json
 from lib import *
+from models import CUniversity
 
 
-class KTH(University):
+class KTH(CUniversity):
     Vacancy_Link = "https://www.kth.se/lediga-jobb?l=en"
     Name = 'KTH Royal Institute of Technology'
     Country_Name = 'Sweden'

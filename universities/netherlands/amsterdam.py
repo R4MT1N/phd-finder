@@ -1,8 +1,8 @@
 from lib import *
-from models import University
+from models import CUniversity
 
 
-class Amsterdam(University):
+class Amsterdam(CUniversity):
     Name = 'University of Amsterdam'
     Vacancy_Link = 'https://vacatures.uva.nl/UvA/search/?createNewAlert=false&q=&optionsFacetsDD_department=Master&optionsFacetsDD_shifttype=PhD+position&optionsFacetsDD_facility=Faculty+of++Science&locale=en_GB'
     Country_Name = 'Netherlands'

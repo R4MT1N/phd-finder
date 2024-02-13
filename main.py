@@ -16,7 +16,7 @@ from random import randint
 #
 # load_dotenv(Path(__file__).parent.parent.joinpath('.env'), override=True)
 
-university_classes: List[Type[CUniversity]] = [KULeuven, Maastricht, Radboud, Twente, Vrije, Erasmus, Groningen, Leiden,
+university_classes: List[Type[CUniversity]] = [Hannover, KULeuven, Maastricht, Radboud, Twente, Vrije, Erasmus, Groningen, Leiden,
                                                Eindhoven, Utrecht, Amsterdam, Delft, Umea, Lulea, Linkoping, Gothenburg, Lund, KTH,
                                                Uppsala, Stockholm, Chalmers]
 
@@ -25,7 +25,7 @@ def seed_db():
     for university_class in university_classes:
         university_class().create_db_record()
 
-    User.create(id=constants.ADMIN_TG_ID, is_admin=True)
+    User.get_or_create(id=constants.ADMIN_TG_ID, chat_id=constants.ADMIN_TG_ID, is_admin=True)
 
     print("Database is seeded successfully.")
 
@@ -34,8 +34,15 @@ def initialize_db():
     create_tables()
     seed_db()
 
+async def send_errors_to_admin(errors):
+    bot = Bot(TG_BOT_TOKEN)
+    await bot.initialize()
+    admin: User = User.select().order_by(User.created_at.asc()).get()
+    text = [f"Error occurred during the collection process with these universities:", ', '.join(errors)]
+    await bot.send_message(admin.chat_id, '\n'.join(text))
 
-async def find_new_positions(full_mode=False):
+
+def find_new_positions(full_mode=False):
     class_mapper = {}
     for university_class in university_classes:
         class_mapper[university_class.Name] = university_class
@@ -52,21 +59,17 @@ async def find_new_positions(full_mode=False):
                 university.save()
                 new_positions += university_instance.total_new_positions
         except:
-            errors.append(university.Name)
+            errors.append(university.name)
 
     if errors:
-        bot = Bot(TG_BOT_TOKEN)
-        await bot.initialize()
-        admin: User = User.select().order_by(User.created_at.asc()).get()
-        text = [f"Error occurred during the collection process with these universities:", ', '.join(errors)]
-        await bot.send_message(admin.chat_id, '\n'.join(text))
+        asyncio.get_event_loop().run_until_complete(send_errors_to_admin(errors))
 
     print(f"{new_positions} new positions were found and added to database.")
 
 
-async def setup():
+def setup():
     initialize_db()
-    await find_new_positions(True)
+    find_new_positions(True)
 
 
 def register_user(user_id, is_admin=False):
@@ -116,11 +119,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.command == 'setup':
-        asyncio.get_event_loop().run_until_complete(setup())
+        # asyncio.get_event_loop().run_until_complete(setup())
+        setup()
 
     elif args.command == 'reset-factory':
         drop_tables()
-        asyncio.get_event_loop().run_until_complete(setup())
+        setup()
+        # asyncio.get_event_loop().run_until_complete(setup())
 
     elif args.command == 'register-user':
         register_user(args.user_id, args.is_admin)
@@ -129,7 +134,8 @@ if __name__ == '__main__':
         remove_user(args.user_id)
 
     elif args.command == 'check':
-        asyncio.get_event_loop().run_until_complete(find_new_positions(args.type == 'full'))
+        # asyncio.get_event_loop().run_until_complete(find_new_positions(args.type == 'full'))
+        find_new_positions(args.type == 'full')
 
     elif args.command == 'notify':
         asyncio.get_event_loop().run_until_complete(notify_new_positions())

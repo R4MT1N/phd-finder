@@ -47,8 +47,7 @@ class University(ABC):
                                          defaults={'usn_rank': self.Rank_USN,
                                                    'usn_cs_rank': self.Rank_USN_CS,
                                                    'qsn_rank': self.Rank_QSN,
-                                                   'country_id': self.Country_Name,
-                                                   'vacancy_link': self.Vacancy_Link})[0]
+                                                   'country_id': self.Country_Name})[0]
 
     @staticmethod
     def _fetch_and_render_link(link=None) -> BeautifulSoup:

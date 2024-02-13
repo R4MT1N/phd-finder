@@ -38,7 +38,6 @@ class University(BaseModel):
     id = AutoField()
     name = CharField(max_length=100, unique=True)
     country = ForeignKeyField(Country, backref='universities')
-    vacancy_link = CharField(max_length=250)
     usn_rank = IntegerField(null=True)
     usn_cs_rank = IntegerField(null=True)
     qsn_rank = IntegerField(null=True)

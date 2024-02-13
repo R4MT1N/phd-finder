@@ -119,13 +119,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.command == 'setup':
-        # asyncio.get_event_loop().run_until_complete(setup())
         setup()
 
     elif args.command == 'reset-factory':
         drop_tables()
         setup()
-        # asyncio.get_event_loop().run_until_complete(setup())
 
     elif args.command == 'register-user':
         register_user(args.user_id, args.is_admin)

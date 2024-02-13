@@ -1,12 +1,9 @@
 from __future__ import annotations
-
 from abc import ABC, abstractmethod
 from typing import List
-
 import requests
 from bs4 import BeautifulSoup
-
-from models import University as MUniversity, Position as MPosition, Country as MCountry
+from .tables import University as MUniversity, Position as MPosition, Country as MCountry
 
 
 class Position:

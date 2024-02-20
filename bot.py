@@ -9,7 +9,7 @@ from tgbot import *
 from models import Position, User, Message, UserPosition, University
 
 UNIVERSITY_PER_PAGE = 10
-POSITION_PER_PAGE = 5
+POSITION_PER_PAGE = 7
 
 logging.basicConfig()
 logger = logging.getLogger()

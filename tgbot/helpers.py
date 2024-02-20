@@ -67,7 +67,7 @@ def format_bot_position(user: User, index, position: Position):
 def format_bot_university(index, university: University):
     lines = [f"{fm(index, '.', bold=True, sep='')} {fm(university.name, bold=True)} {f'/{UNIVERSITY_POSITIONS_COMMAND}{university.id}'}",
              f"{fm(university.country, italic=True)}",
-             f"{fm(f'☑️ {university.ongoing_position_count} / 🔇 {university.removed_position_count}', italic=True)}"]
+             f"{fm(f'☑️ {university.ongoing_position_count}', italic=True) + ' / ' + fm(f'🔇 {university.removed_position_count}', italic=True)}"]
 
     t_delta = datetime.now() - university.next_check_at
 

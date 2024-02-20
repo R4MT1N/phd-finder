@@ -55,7 +55,7 @@ def find_new_positions(full_mode=False):
             if full_mode or (university.next_check_at is None or university.next_check_at <= datetime.now()):
                 university_instance = class_mapper[university.name]()
                 university_instance.fetch_positions()
-                university.next_check_at = datetime.now() + timedelta(hours=randint(3, 6), minutes=randint(0, 5) * 10)
+                university.next_check_at = datetime.now() + timedelta(hours=randint(1, 2), minutes=randint(0, 59))
                 university.save()
                 new_positions += university_instance.total_new_positions
         except:

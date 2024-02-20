@@ -58,21 +58,23 @@ def format_bot_position(user: User, index, position: Position):
         emoji = '🔔'
         command = f'/{WATCH_COMMAND}{position.id}'
 
-    lines = [f"*{fm(index, '.')}* {fm(position.title, link=position.link, strikethrough=position.is_expired())}",
+    lines = [f"{fm(index, '.', bold=True)} {fm(position.title, link=position.link, strikethrough=position.is_expired())}",
              f"{fm(position.university.name, italic=True)} @ {fm(position.persian_end_date(), italic=True)}",
              f"{emoji} {command}"]
+
     return '\n'.join(lines)
 
 def format_bot_university(index, university: University):
-    lines = [f"*{fm(index, '.', sep='')}* {fm(university.name, bold=True)} {f'/{UNIVERSITY_POSITIONS_COMMAND}{university.id}'}",
-             f"{fm(f'☑️ {university.ongoing_position_count} 🔇 {university.removed_position_count}', italic=True)}"]
+    lines = [f"{fm(index, '.', bold=True, sep='')} {fm(university.name, bold=True)} {f'/{UNIVERSITY_POSITIONS_COMMAND}{university.id}'}",
+             f"{fm(university.country, italic=True)}",
+             f"{fm(f'☑️ {university.ongoing_position_count} / 🔇 {university.removed_position_count}', italic=True)}"]
 
     t_delta = datetime.now() - university.next_check_at
 
     if t_delta.total_seconds() < 0:
-        lines[-1] += " " + fm(f"🔄 in {humanize.naturaltime(t_delta).replace(' from now', '')}", italic=True)
+        lines[-1] += " / " + fm(f"🔄 in {humanize.naturaltime(t_delta).replace(' from now', '')}", italic=True)
     else:
-        lines[-1] += " " + fm(f"⚠️ {humanize.naturaltime(t_delta)}", italic=True)
+        lines[-1] += " / " + fm(f"⚠️ {humanize.naturaltime(t_delta)}", italic=True)
 
     return '\n'.join(lines)
 

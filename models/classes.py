@@ -40,7 +40,6 @@ class University(ABC):
 
         MCountry.get_or_create(name=self.Country_Name)
         self.db_model = self.create_db_record()
-        self._check_source_validity()
 
     def create_db_record(self):
         return MUniversity.get_or_create(name=self.Name,
@@ -65,16 +64,6 @@ class University(ABC):
     @abstractmethod
     def fetch_positions(self) -> List[Position]:
         pass
-
-    def _check_job_availability(self):
-        if len(self._extract_jobs()) == 0:
-            print(f'No position were found in "{self.Name}".')
-
-    def _check_source_validity(self):
-        try:
-            assert self._extract_job_block() is not None
-        except AssertionError:
-            raise Exception(f'Page validation failed for "{self.Name}".')
 
     def save_position(self, link, title, expire_date=None, start_date=None):
         if Position(self, link, title, expire_date, start_date).save_if_new():

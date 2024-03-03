@@ -14,7 +14,7 @@ class KTH(CUniversity):
 
     def _extract_job_block(self):
         try:
-            job_data = clean_text(self.soup_data.select_one('div.main > div.row > script').string.split('=')[1].strip(' ;'), True).strip('"')
+            job_data = clean_text(self.soup_data.select_one('div.main > div.row > script').string.split('=')[1].strip(' ;'), True).strip("'")
             return json.loads(job_data)['jobData']
         except:
             return None

@@ -1,4 +1,4 @@
-from tgbot import constants
+import logging
 import argparse
 import asyncio
 from tgbot import constants
@@ -15,6 +15,10 @@ from random import randint
 # from pathlib import Path
 #
 # load_dotenv(Path(__file__).parent.parent.joinpath('.env'), override=True)
+
+logging.basicConfig()
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 university_classes: List[Type[CUniversity]] = [Hannover, KULeuven, Maastricht, Radboud, Twente, Vrije, Erasmus, Groningen, Leiden,
                                                Eindhoven, Utrecht, Amsterdam, Delft, Umea, Lulea, Linkoping, Gothenburg, Lund, KTH,
@@ -58,7 +62,8 @@ def find_new_positions(full_mode=False):
                 university.next_check_at = datetime.now() + timedelta(hours=randint(1, 2), minutes=randint(0, 59))
                 university.save()
                 new_positions += university_instance.total_new_positions
-        except:
+        except Exception as e:
+            logger.error(e)
             errors.append(university.name)
 
     if errors:

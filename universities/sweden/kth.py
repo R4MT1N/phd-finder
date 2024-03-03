@@ -31,7 +31,7 @@ class KTH(CUniversity):
                 continue
 
             title = clean_text(job['attributes']['translations']['texts']['title'])
-            link = job['links']['apply']
+            link = job['links']['apply'] or job['links']['add-rendered']
             expire_at = read_date(job['attributes']['dates']['deadline'].split('T')[0], "%Y-%m-%d")
             published_at = read_date(job['attributes']['dates']['published'].split('T')[0], "%Y-%m-%d")
             self.save_position(link, title, expire_at, published_at)

@@ -11,11 +11,9 @@ class Twente(CUniversity):
     Rank_USN_CS = 186
     Auto_Soup = True
 
-    def _extract_job_block(self):
-        return self.soup_data.select_one('ul.vacancies__results__list')
-
     def _extract_jobs(self):
-        return self.soup_data.select('ul.vacancies__results__list > li')
+        job_block = self.soup_data.select_one('ul.vacancies__results__list')
+        return job_block.select('li')
 
     def fetch_positions(self):
         jobs = self._extract_jobs()

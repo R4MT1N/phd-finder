@@ -11,11 +11,9 @@ class Radboud(CUniversity):
     Rank_USN_CS = 248
     Auto_Soup = True
 
-    def _extract_job_block(self):
-        return self.soup_data.select_one('div.overview--list ul')
-
     def _extract_jobs(self):
-        return self.soup_data.select('div.overview--list ul > li')
+        job_block = self.soup_data.select_one('div.overview--list ul')
+        return job_block.select('li')
 
     def fetch_positions(self):
         jobs = self._extract_jobs()

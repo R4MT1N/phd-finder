@@ -54,10 +54,6 @@ class University(ABC):
         return BeautifulSoup(content, 'html.parser')
 
     @abstractmethod
-    def _extract_job_block(self):
-        pass
-
-    @abstractmethod
     def _extract_jobs(self):
         pass
 

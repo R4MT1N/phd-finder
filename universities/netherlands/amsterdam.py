@@ -10,16 +10,6 @@ class Amsterdam(CUniversity):
     Rank_QSN = 53
     Rank_USN_CS = 108
 
-    def _extract_job_block(self):
-        try:
-            s = Session()
-            s.get(self.Vacancy_Link)
-            content = s.get(
-                'https://vacatures.uva.nl/UvA/tile-search-results/?q=&sortColumn=referencedate&sortDirection=desc&optionsFacetsDD_department=Master&optionsFacetsDD_shifttype=PhD+position&optionsFacetsDD_facility=Faculty+of++Science&startrow=0').content
-            return BeautifulSoup(content, 'html.parser').select('li.job-tile')
-        except:
-            return None
-
     def _extract_jobs(self):
         s = Session()
         jobs = []

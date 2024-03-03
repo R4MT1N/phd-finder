@@ -10,20 +10,14 @@ class Delft(CUniversity):
     Rank_QSN = 47
     Rank_USN_CS = 65
 
-    def _extract_job_block(self):
-        try:
-            return post_request(self.Vacancy_Link,
-                                headers={'Username': 'QEZFK026203F3VBQBLO6G68W9:guest:FO', 'Password': 'guest'},
-                                json={"searchCriteria": {"criteria": [{"key": "LOV25", "values": ["11383"]},
-                                                                      {"key": "LOV27", "values": ["11422"]},
-                                                                      {"key": "LOV28", "values": ["11564"]},
-                                                                      {"key": "Resultsperpage",
-                                                                       "values": ["100"]}]}}).json()['jobs']
-        except:
-            return None
-
     def _extract_jobs(self):
-        return self._extract_job_block()
+        return post_request(self.Vacancy_Link,
+                            headers={'Username': 'QEZFK026203F3VBQBLO6G68W9:guest:FO', 'Password': 'guest'},
+                            json={"searchCriteria": {"criteria": [{"key": "LOV25", "values": ["11383"]},
+                                                                  {"key": "LOV27", "values": ["11422"]},
+                                                                  {"key": "LOV28", "values": ["11564"]},
+                                                                  {"key": "Resultsperpage",
+                                                                   "values": ["100"]}]}}).json()['jobs']
 
     def fetch_positions(self):
         jobs = self._extract_jobs()

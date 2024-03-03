@@ -11,11 +11,9 @@ class Gothenburg(CUniversity):
     Rank_USN_CS = 584
     Auto_Soup = True
 
-    def _extract_job_block(self):
-        return self.soup_data.select_one('table.table--vacancies')
-
     def _extract_jobs(self):
-        return self.soup_data.select('table.table--vacancies tbody tr')
+        job_block = self.soup_data.select_one('table.table--vacancies')
+        return job_block.select('tbody tr')
 
     def fetch_positions(self):
         rows = self._extract_jobs()

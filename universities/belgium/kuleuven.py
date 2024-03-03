@@ -11,15 +11,8 @@ class KULeuven(CUniversity):
     Rank_QSN = 124
     Rank_USN_CS = 123
 
-    def _extract_job_block(self):
-        try:
-            self.json_data = post_request(self.Vacancy_Link, data={"_locale": "en", "environment": "production", "release": ""}).json()['hits']
-            return self.json_data
-        except:
-            return None
-
     def _extract_jobs(self):
-        return self.json_data
+        return post_request(self.Vacancy_Link, data={"_locale": "en", "environment": "production", "release": ""}).json()['hits']
 
     def fetch_positions(self):
         jobs = self._extract_jobs()

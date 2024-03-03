@@ -11,11 +11,9 @@ class Umea(CUniversity):
     Rank_USN_CS = None
     Auto_Soup = True
 
-    def _extract_job_block(self):
-        return self.soup_data.select_one('.jobblista')
-
     def _extract_jobs(self):
-        return self.soup_data.select('.jobblista .jobb')
+        job_block = self.soup_data.select_one('.jobblista')
+        return job_block.select('.jobb')
 
     def fetch_positions(self):
         rows = self._extract_jobs()

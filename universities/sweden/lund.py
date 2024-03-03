@@ -11,11 +11,9 @@ class Lund(CUniversity):
     Rank_USN_CS = 328
     Auto_Soup = True
 
-    def _extract_job_block(self):
-        return self.soup_data.select_one('table.vacancies-list__table')
-
     def _extract_jobs(self):
-        return self.soup_data.select('table.vacancies-list__table tbody tr')
+        job_block = self.soup_data.select_one('table.vacancies-list__table')
+        return job_block.select('tbody tr')
 
     def fetch_positions(self):
         rows = self._extract_jobs()

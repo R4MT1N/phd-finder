@@ -11,11 +11,9 @@ class Erasmus(CUniversity):
     Rank_USN_CS = 520
     Auto_Soup = True
 
-    def _extract_job_block(self):
-        return self.soup_data.select_one('ul.list--view')
-
     def _extract_jobs(self):
-        return self.soup_data.select('ul.list--view li.list__item--margin')
+        job_block = self.soup_data.select_one('ul.list--view')
+        return job_block.select('li.list__item--margin')
 
     def fetch_positions(self):
         jobs = self._extract_jobs()

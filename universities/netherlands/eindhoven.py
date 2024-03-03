@@ -11,12 +11,10 @@ class Eindhoven(CUniversity):
     Rank_QSN = 124
     Rank_USN_CS = 123
 
-    def _extract_job_block(self):
-        content = post_request(self.Vacancy_Link, data={'p_category_code_arr': ['6047-461661', '6048-461676'], 'p_format': 'AJAX'}).content
-        self.page_soup = BeautifulSoup(content, 'html.parser')
-        return self.page_soup.select('div.jobpost')
-
     def _extract_jobs(self):
+        content = post_request(self.Vacancy_Link,
+                               data={'p_category_code_arr': ['6047-461661', '6048-461676'], 'p_format': 'AJAX'}).content
+        self.page_soup = BeautifulSoup(content, 'html.parser')
         return self.page_soup.select('div.jobpost')
 
     def fetch_positions(self):

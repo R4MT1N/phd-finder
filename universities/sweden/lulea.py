@@ -11,14 +11,8 @@ class Lulea(CUniversity):
     Rank_USN_CS = 265
     Auto_Soup = True
 
-    def _extract_job_block(self):
-        try:
-            return get_request(self.Vacancy_Link).json()['data']
-        except:
-            return None
-
     def _extract_jobs(self):
-        job_block: dict = self._extract_job_block()
+        job_block: dict = get_request(self.Vacancy_Link).json()['data']
         return job_block.get('jobs', [])
 
     def fetch_positions(self):

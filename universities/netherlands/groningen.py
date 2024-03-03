@@ -11,12 +11,10 @@ class Groningen(CUniversity):
     Rank_USN_CS = 415
     Auto_Soup = True
 
-    def _extract_job_block(self):
-        self.page_soup = BeautifulSoup(get_request(self.Vacancy_Link, headers={'Accept-Language': 'en-US,en;q=0.7'}).content, 'html.parser')
-        return self.page_soup.select_one('div.rug-background-alternating--inverse')
-
     def _extract_jobs(self):
-        return self.page_soup.select('div.rug-background-alternating--inverse > div')
+        self.page_soup = BeautifulSoup(get_request(self.Vacancy_Link, headers={'Accept-Language': 'en-US,en;q=0.7'}).content, 'html.parser')
+        job_block = self.page_soup.select_one('div.rug-background-alternating--inverse')
+        return job_block.select(' > div')
 
     def fetch_positions(self):
         jobs = self._extract_jobs()

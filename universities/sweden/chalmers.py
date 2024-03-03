@@ -11,11 +11,9 @@ class Chalmers(CUniversity):
     Rank_USN_CS = 328
     Auto_Soup = True
 
-    def _extract_job_block(self):
-        return self.soup_data.select_one('#jobsTable')
-
     def _extract_jobs(self):
-        return self.soup_data.select('#jobsTable tbody tr')
+        job_block = self.soup_data.select_one('#jobsTable')
+        return job_block.select('tbody tr')
 
     def fetch_positions(self):
         rows = self._extract_jobs()

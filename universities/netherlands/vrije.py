@@ -13,7 +13,7 @@ class Vrije(CUniversity):
 
     def _extract_jobs(self):
         job_block = self.soup_data.select_one('ul.vacancy-list')
-        return job_block.select('li')
+        return job_block.select('li.vacancy-item-row')
 
     def fetch_positions(self):
         jobs = self._extract_jobs()

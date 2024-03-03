@@ -13,8 +13,8 @@ class Groningen(CUniversity):
 
     def _extract_jobs(self):
         self.page_soup = BeautifulSoup(get_request(self.Vacancy_Link, headers={'Accept-Language': 'en-US,en;q=0.7'}).content, 'html.parser')
-        job_block = self.page_soup.select_one('div.rug-background-alternating--inverse')
-        return job_block.select(' > div')
+        self.page_soup.select_one('div.rug-background-alternating--inverse')
+        return self.page_soup.select('div.rug-background-alternating--inverse > div')
 
     def fetch_positions(self):
         jobs = self._extract_jobs()

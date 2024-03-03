@@ -12,7 +12,7 @@ class Maastricht(CUniversity):
     Auto_Soup = True
 
     def _extract_jobs(self):
-        job_block = self.soup_data.select('#searchresults')
+        job_block = self.soup_data.select_one('#searchresults')
         return job_block.select('tbody tr')
 
     def fetch_positions(self):

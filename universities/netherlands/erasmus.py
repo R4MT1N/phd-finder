@@ -12,11 +12,14 @@ class Erasmus(CUniversity):
     Auto_Soup = True
 
     def _extract_jobs(self):
-        job_block = self.soup_data.select_one('ul.list--view')
-        return job_block.select('li.list__item--margin')
+        return int(self.soup_data.select_one('header h2.overview__summary').text.split()[0])
 
     def fetch_positions(self):
-        jobs = self._extract_jobs()
+        no_jobs = self._extract_jobs()
+        if no_jobs == 0:
+            return
+        
+        jobs = self.soup_data.select_one('ul.list--view').select('li.list__item--margin')
 
         for job in jobs:
             title = clean_text(job.select_one('h3.teaser__title a').text)

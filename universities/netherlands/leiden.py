@@ -12,8 +12,10 @@ class Leiden(CUniversity):
     Auto_Soup = True
 
     def _extract_jobs(self):
-        job_block = self.soup_data.select_one('#content ul')
-        return job_block.select('li')
+        if self.soup_data.select_one('#content > ul'):
+            return self.soup_data.select_one('#content > ul li')
+        else:
+            return []
 
     def fetch_positions(self):
         jobs = self._extract_jobs()

@@ -20,9 +20,7 @@ logging.basicConfig()
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-university_classes: List[Type[CUniversity]] = [Hannover, KULeuven, Maastricht, Radboud, Twente, Vrije, Erasmus, Groningen, Leiden,
-                                               Eindhoven, Utrecht, Amsterdam, Delft, Umea, Lulea, Linkoping, Gothenburg, Lund, KTH,
-                                               Uppsala, Stockholm, Chalmers]
+university_classes: List[Type[CUniversity]] = [Hannover, KULeuven, Maastricht, Radboud, Twente, Vrije, Erasmus, Groningen, Leiden, Eindhoven, Utrecht, Amsterdam, Delft, Umea, Lulea, Linkoping, Gothenburg, Lund, KTH, Uppsala, Stockholm, Chalmers]
 
 
 def seed_db():
@@ -37,6 +35,7 @@ def seed_db():
 def initialize_db():
     create_tables()
     seed_db()
+
 
 async def send_errors_to_admin(errors):
     bot = Bot(TG_BOT_TOKEN)
@@ -63,7 +62,7 @@ def find_new_positions(full_mode=False):
                 university.save()
                 new_positions += university_instance.total_new_positions
         except Exception as e:
-            logger.error(e)
+            logger.error(e, stack_info=True)
             errors.append(university.name)
 
     if errors:

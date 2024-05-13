@@ -12,13 +12,8 @@ class Leiden(CUniversity):
     Auto_Soup = True
 
     def _extract_jobs(self):
-<<<<<<< HEAD
         if self.soup_data.select_one('#content > ul'):
             return self.soup_data.select('#content > ul li')
-=======
-        if job_block := self.soup_data.select_one('#content ul'):
-            return job_block.select('li')
->>>>>>> 18f096b4d91c23b7ed539b1ee54c3882e18cdfec
         else:
             return []
 
@@ -26,7 +21,6 @@ class Leiden(CUniversity):
         jobs = self._extract_jobs()
 
         for job in jobs:
-            print(jobs)
             title = clean_text(job.select_one('a div strong').text)
             link = join_urls(self.Vacancy_Link, job.select_one('a').attrs['href'])
             pos_details = BeautifulSoup(get_request(link).content, 'html.parser')

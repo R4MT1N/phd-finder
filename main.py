@@ -4,10 +4,8 @@ import asyncio
 from tgbot import constants
 from tgbot.helpers import notify_admin
 from typing import List, Type
-from telegram import Bot
 from models import University as MUniversity, CUniversity
 from models.tables import User, create_tables, drop_tables
-from tgbot import TG_BOT_TOKEN
 from universities import *
 from scheduler import *
 from datetime import datetime, timedelta
@@ -22,7 +20,9 @@ logging.basicConfig()
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-university_classes: List[Type[CUniversity]] = [Hannover, KULeuven, Maastricht, Radboud, Twente, Vrije, Erasmus, Groningen, Leiden, Eindhoven, Utrecht, Amsterdam, Delft, Umea, Lulea, Linkoping, Gothenburg, Lund, KTH, Uppsala, Stockholm, Chalmers]
+university_classes: List[Type[CUniversity]] = [Hannover, KULeuven, Maastricht, Radboud, Twente, Vrije, Erasmus, Groningen,
+                                               Leiden, Eindhoven, Utrecht, Amsterdam, Delft, Umea, Lulea, Linkoping, Gothenburg,
+                                               Lund, KTH, Uppsala, Stockholm, Chalmers, Turku, Oulu, Helsinki, Bergen]
 
 
 def seed_db():

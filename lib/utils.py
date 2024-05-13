@@ -13,6 +13,7 @@ def read_timestamp(value):
 def clean_text(value, is_quoted=False):
     text = value.strip()
     text = re.sub(r'[\s\u200b]+', ' ', text)
+
     if is_quoted:
         text = unquote(text)
     return text

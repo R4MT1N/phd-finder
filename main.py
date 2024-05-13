@@ -22,9 +22,7 @@ logging.basicConfig()
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-university_classes: List[Type[CUniversity]] = [Hannover, KULeuven, Maastricht, Radboud, Twente, Vrije, Erasmus, Groningen, Leiden,
-                                               Eindhoven, Utrecht, Amsterdam, Delft, Umea, Lulea, Linkoping, Gothenburg, Lund, KTH,
-                                               Uppsala, Stockholm, Chalmers]
+university_classes: List[Type[CUniversity]] = [Hannover, KULeuven, Maastricht, Radboud, Twente, Vrije, Erasmus, Groningen, Leiden, Eindhoven, Utrecht, Amsterdam, Delft, Umea, Lulea, Linkoping, Gothenburg, Lund, KTH, Uppsala, Stockholm, Chalmers]
 
 
 def seed_db():
@@ -39,6 +37,7 @@ def seed_db():
 def initialize_db():
     create_tables()
     seed_db()
+
 
 async def send_errors_to_admin(errors):
     await notify_admin([f"Error occurred during the collection process with these universities:", ', '.join(errors)])

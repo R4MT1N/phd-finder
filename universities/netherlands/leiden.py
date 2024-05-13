@@ -12,8 +12,13 @@ class Leiden(CUniversity):
     Auto_Soup = True
 
     def _extract_jobs(self):
+<<<<<<< HEAD
         if self.soup_data.select_one('#content > ul'):
             return self.soup_data.select('#content > ul li')
+=======
+        if job_block := self.soup_data.select_one('#content ul'):
+            return job_block.select('li')
+>>>>>>> 18f096b4d91c23b7ed539b1ee54c3882e18cdfec
         else:
             return []
 

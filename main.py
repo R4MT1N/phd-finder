@@ -2,6 +2,7 @@ import logging
 import argparse
 import asyncio
 from tgbot import constants
+from tgbot.helpers import notify_admin
 from typing import List, Type
 from telegram import Bot
 from models import University as MUniversity, CUniversity
@@ -11,6 +12,7 @@ from universities import *
 from scheduler import *
 from datetime import datetime, timedelta
 from random import randint
+import traceback
 # from dotenv import load_dotenv
 # from pathlib import Path
 #
@@ -39,12 +41,7 @@ def initialize_db():
     seed_db()
 
 async def send_errors_to_admin(errors):
-    bot = Bot(TG_BOT_TOKEN)
-    await bot.initialize()
-    admin: User = User.select().order_by(User.created_at.asc()).get()
-    text = [f"Error occurred during the collection process with these universities:", ', '.join(errors)]
-    await bot.send_message(admin.chat_id, '\n'.join(text))
-
+    await notify_admin([f"Error occurred during the collection process with these universities:", ', '.join(errors)])
 
 def find_new_positions(full_mode=False):
     class_mapper = {}
@@ -63,7 +60,7 @@ def find_new_positions(full_mode=False):
                 university.save()
                 new_positions += university_instance.total_new_positions
         except Exception as e:
-            logger.error(e)
+            logger.error(traceback.format_exc())
             errors.append(university.name)
 
     if errors:

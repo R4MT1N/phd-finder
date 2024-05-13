@@ -1,4 +1,6 @@
 from datetime import datetime
+from typing import Union, List
+
 import humanize
 from peewee import Query, fn
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
@@ -58,7 +60,7 @@ def format_bot_position(user: User, index, position: Position):
         emoji = '🔔'
         command = f'/{WATCH_COMMAND}{position.id}'
 
-    lines = [f"{fm(index, '.', bold=True)} {fm(position.title, link=position.link, strikethrough=position.is_expired())}",
+    lines = [f"{fm(index, '.', sep='', bold=True)} {fm(position.title, link=position.link, strikethrough=position.is_expired())}",
              f"{fm(position.university.name, italic=True)} @ {fm(position.persian_end_date(), italic=True)}",
              f"{emoji} {command}"]
 
@@ -229,3 +231,17 @@ def upcoming_day_positions(user, page, per_page):
         return text, reply_markup
     else:
         return generate_position_list(user, query, UPCOMING_DAY_DEADLINES_TITLE, page, per_page, total_num, UPCOMING_DAY_DEADLINES_INLINE)
+
+async def notify_admin(message: Union[str, List[str]], bot: Bot = None, admin_id: int = None):
+    if not admin_id:
+        admin: User = User.select().order_by(User.created_at.asc()).get()
+        admin_id = admin.chat_id
+
+    if not bot:
+        bot = Bot(TG_BOT_TOKEN)
+        await bot.initialize()
+
+    if isinstance(message, list):
+        message = '\n'.join(message)
+
+    await bot.send_message(admin_id, message)

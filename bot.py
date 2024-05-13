@@ -60,7 +60,7 @@ async def watch_channel_position_inline_handler(update: Update, context: Context
     user.positions.add(position)
     await query.answer(POSITION_WATCHED)
 
-async def cancel_inline_handler(update: Update, context: CallbackContext):
+async def remove_message_inline_handler(update: Update, context: CallbackContext):
     query = update.callback_query
 
     if (user := User.get_by_id(query.from_user.id)) is None:
@@ -423,7 +423,7 @@ def main() -> None:
     application.add_handler(CallbackQueryHandler(removed_positions_inline_handler, REMOVED_POSITIONS_INLINE))
     application.add_handler(CallbackQueryHandler(weekly_reminder_inline_handler, UPCOMING_WEEK_DEADLINES_INLINE))
     application.add_handler(CallbackQueryHandler(daily_reminder_inline_handler, UPCOMING_DAY_DEADLINES_INLINE))
-    application.add_handler(CallbackQueryHandler(cancel_inline_handler, CANCEL_INLINE))
+    application.add_handler(CallbackQueryHandler(remove_message_inline_handler, CANCEL_INLINE))
 
     application.add_handler(InlineQueryHandler(inline_university_query_handler))
 

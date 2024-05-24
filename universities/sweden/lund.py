@@ -19,7 +19,7 @@ class Lund(CUniversity):
         rows = self._extract_jobs()
 
         for row in rows:
-            if row.attrs['data-job-category'] != 'D' or row.attrs['data-job-department'] != 'faculty_of_science':
+            if row.attrs['data-job-category'] != 'D' or row.attrs['data-job-department'] != 'faculty_of_engineering__lth':
                 continue
 
             title = row.attrs['data-job-title']

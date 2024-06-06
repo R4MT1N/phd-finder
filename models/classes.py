@@ -15,9 +15,14 @@ class Position:
         self.start_date = start_date
 
     def save_if_new(self) -> bool:
-        model, is_created = MPosition.get_or_create(link=self.link, end_date=self.end_date,
+        model, is_created = MPosition.get_or_create(title=self.title, end_date=self.end_date,
                                                     university=self.university.db_model,
-                                                    defaults={'start_date': self.start_date, 'title': self.title})
+                                                    defaults={'start_date': self.start_date, 'link': self.link})
+        
+        if not is_created and model.link != self.link:
+            model.link = self.link
+            model.save()
+        
         return is_created
 
     def __str__(self):

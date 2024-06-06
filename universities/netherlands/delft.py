@@ -24,6 +24,6 @@ class Delft(CUniversity):
 
         for job in jobs:
             title = clean_text(job['jobFields']['jobTitle'])
-            link = job['jobFields']['applicationUrl']
+            link = f"https://www.tudelft.nl/over-tu-delft/werken-bij-tu-delft/vacatures/details?jobId={job['jobFields']['id']}"
             expire_at = read_timestamp(job['jobFields']['DPOSTINGEND'] // 1000)
             self.save_position(link, title, expire_at)

@@ -27,5 +27,8 @@ class Groningen(CUniversity):
 
             title = clean_text(job.select_one('div.rug-mb-s a').text)
             link = join_urls(self.Vacancy_Link, job.select_one('div.rug-mb-s a').attrs['href'])
-            end_at = read_date(clean_text(job.select('div.rug-layout .rug-layout__item')[5].text), '%B %d, %Y')
+            date_string = clean_text(job.select('div.rug-layout .rug-layout__item')[5].text)
+            if date_string == 'not specified':
+                continue
+            end_at = read_date(date_string, '%B %d, %Y')
             self.save_position(link, title, end_at)

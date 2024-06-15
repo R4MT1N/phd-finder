@@ -12,7 +12,7 @@ class Erasmus(CUniversity):
     Auto_Soup = True
 
     def _extract_jobs(self):
-        return int(self.soup_data.select_one('header h2.overview__summary').text.split()[0])
+        return int(self.soup_data.select_one('h2.overview__summary').text.split()[0])
 
     def fetch_positions(self):
         no_jobs = self._extract_jobs()

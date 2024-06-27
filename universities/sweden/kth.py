@@ -13,7 +13,7 @@ class KTH(CUniversity):
     Auto_Soup = True
 
     def _extract_jobs(self):
-        job_data = clean_text(self.soup_data.select_one('div.kth-content > div.row > script').string.split('=')[1].strip(' ;'), True).strip('"')
+        job_data = clean_text(self.soup_data.select_one('div.kth-main-content > div.row > script').string.split('=')[1].strip(' ;'), True).strip('"')
         job_block = json.loads(job_data)['jobData']
         return job_block.get('data', [])
 

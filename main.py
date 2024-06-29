@@ -22,7 +22,9 @@ logger.setLevel(logging.INFO)
 
 university_classes: List[Type[CUniversity]] = [Hannover, KULeuven, Maastricht, Radboud, Twente, Vrije, Erasmus, Groningen,
                                                Leiden, Eindhoven, Utrecht, Amsterdam, Delft, Umea, Lulea, Linkoping, Gothenburg,
-                                               Lund, KTH, Uppsala, Stockholm, Chalmers, Turku, Oulu, Helsinki, Bergen]
+                                               Lund, KTH, Stockholm, Chalmers, Turku, Oulu, Helsinki, Bergen]
+
+# Uppsala crawler is under maintenance
 
 
 def seed_db():
@@ -51,6 +53,9 @@ def find_new_positions(full_mode=False):
     errors = []
 
     for university in MUniversity.select():
+        if university.name not in class_mapper:
+            continue
+
         try:
             if full_mode or (university.next_check_at is None or university.next_check_at <= datetime.now()):
                 university_instance = class_mapper[university.name]()

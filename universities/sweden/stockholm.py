@@ -12,8 +12,8 @@ class Stockholm(CUniversity):
     Auto_Soup = True
 
     def _extract_jobs(self):
-        job_block = self.soup_data.select_one('#jobsTable')
-        return job_block.select('tbody tr')
+        job_block = self.soup_data.select_one('#mainjoblist')
+        return job_block.select('#jobsTable tbody tr')
 
     def fetch_positions(self):
         rows = self._extract_jobs()

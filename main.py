@@ -21,10 +21,11 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 university_classes: List[Type[CUniversity]] = [Hannover, KULeuven, Maastricht, Radboud, Twente, Vrije, Erasmus, Groningen,
-                                               Leiden, Eindhoven, Utrecht, Amsterdam, Delft, Umea, Lulea, Linkoping, Gothenburg,
+                                               Leiden, Eindhoven, Utrecht, Amsterdam, Umea, Lulea, Linkoping, Gothenburg,
                                                Lund, KTH, Stockholm, Chalmers, Turku, Oulu, Helsinki, Bergen]
 
 # Uppsala crawler is under maintenance
+# Delft crawler under maintenance
 
 
 def seed_db():
